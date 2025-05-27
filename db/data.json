@@ -1,0 +1,599 @@
+{
+    "utilisateur": [
+        {
+            "nom": "Guiren",
+            "prenom": "Anice",
+            "email": "anice@example.com",
+            "password": "testAnice",
+            "telephone": "07.06.05.04.03"
+        },
+        {
+            "nom": "Muller",
+            "prenom": "Stephane",
+            "email": "stephane@example.com",
+            "password": "testStephane",
+            "telephone": "06.07.08.09.10"
+        },
+        {
+            "nom": "Dewaelle",
+            "prenom": "Sebastien",
+            "email": "sebastien@example.com",
+            "password": "testCeb",
+            "telephone": "06.99.98.97.96"
+        },
+        {
+            "nom": "Dupont",
+            "prenom": "Alice",
+            "email": "alice.dupont@example.com",
+            "password": "testAlice",
+            "telephone": "06.45.89.23.10"
+        },
+        {
+            "nom": "Martin",
+            "prenom": "Lucas",
+            "email": "lucas.martin@example.com",
+            "password": "testLucas",
+            "telephone": "07.62.34.56.78"
+        },
+        {
+            "nom": "Lemoine",
+            "prenom": "Chloé",
+            "email": "chloe.lemoine@example.com",
+            "password": "testChloe",
+            "telephone": "06.98.23.45.12"
+        },
+        {
+            "nom": "Bernard",
+            "prenom": "Julien",
+            "email": "julien.bernard@example.com",
+            "password": "testJulien",
+            "telephone": "07.51.63.22.84"
+        }
+    ],
+    "adresse": [
+        {
+            "numero": "10",
+            "type_voie": "rue",
+            "nom_voie": "de la Convention",
+            "code_postal": "75015",
+            "ville": "Paris",
+            "pays": "France",
+            "defaut": 1,
+            "active": 1,
+            "id_utilisateur": 1
+        },
+        {
+            "numero": "22 BIS",
+            "type_voie": "avenue",
+            "nom_voie": "du Général Leclerc",
+            "code_postal": "13003",
+            "ville": "Marseille",
+            "pays": "France",
+            "defaut": 1,
+            "active": 1,
+            "id_utilisateur": 2
+        },
+        {
+            "numero": "5",
+            "type_voie": "place",
+            "nom_voie": "du Capitole",
+            "code_postal": "31000",
+            "ville": "Toulouse",
+            "pays": "France",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 3
+        },
+        {
+            "numero": "7",
+            "type_voie": "rue",
+            "nom_voie": "Pasteur",
+            "code_postal": "67000",
+            "ville": "Strasbourg",
+            "pays": "France",
+            "defaut": 1,
+            "active": 1,
+            "id_utilisateur": 4
+        },
+        {
+            "numero": "13",
+            "type_voie": "boulevard",
+            "nom_voie": "Victor Hugo",
+            "code_postal": "06000",
+            "ville": "Nice",
+            "pays": "France",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 5
+        },
+        {
+            "numero": "3",
+            "type_voie": "rue",
+            "nom_voie": "des Fleurs",
+            "code_postal": "72000",
+            "ville": "Le Mans",
+            "pays": "France",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 6
+        },
+        {
+            "numero": "18",
+            "type_voie": "avenue",
+            "nom_voie": "du Président Kennedy",
+            "code_postal": "33700",
+            "ville": "Mérignac",
+            "pays": "France",
+            "defaut": 1,
+            "active": 1,
+            "id_utilisateur": 7
+        },
+        {
+            "numero": "44",
+            "type_voie": "rue",
+            "nom_voie": "Montorgueil",
+            "code_postal": "75002",
+            "ville": "Paris",
+            "pays": "France",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 1
+        },
+        {
+            "numero": "11",
+            "type_voie": "rue",
+            "nom_voie": "de la Liberté",
+            "code_postal": "21000",
+            "ville": "Dijon",
+            "pays": "France",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 2
+        },
+        {
+            "numero": "6 BIS",
+            "type_voie": "avenue",
+            "nom_voie": "de Paris",
+            "code_postal": "94300",
+            "ville": "Vincennes",
+            "pays": "France",
+            "defaut": 1,
+            "active": 1,
+            "id_utilisateur": 3
+        },
+        {
+            "numero": "1",
+            "type_voie": "rue",
+            "nom_voie": "des Carmes",
+            "code_postal": "31000",
+            "ville": "Toulouse",
+            "pays": "France",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 4
+        },
+        {
+            "numero": "28",
+            "type_voie": "rue",
+            "nom_voie": "du Château",
+            "code_postal": "92000",
+            "ville": "Nanterre",
+            "pays": "France",
+            "defaut": 1,
+            "active": 1,
+            "id_utilisateur": 5
+        },
+        {
+            "numero": "9",
+            "type_voie": "rue",
+            "nom_voie": "Saint-Nicolas",
+            "code_postal": "44000",
+            "ville": "Nantes",
+            "pays": "France",
+            "defaut": 1,
+            "active": 1,
+            "id_utilisateur": 6
+        },
+        {
+            "numero": "17",
+            "type_voie": "boulevard",
+            "nom_voie": "des Belges",
+            "code_postal": "69006",
+            "ville": "Lyon",
+            "pays": "France",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 7
+        },
+        {
+            "numero": "2",
+            "type_voie": "place",
+            "nom_voie": "Masséna",
+            "code_postal": "06000",
+            "ville": "Nice",
+            "pays": "France",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 1
+        },
+        {
+            "numero": "15",
+            "type_voie": "via",
+            "nom_voie": "Roma",
+            "code_postal": "00185",
+            "ville": "Rome",
+            "pays": "Italie",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 2
+        },
+        {
+            "numero": "7",
+            "type_voie": "rue",
+            "nom_voie": "de la Loi",
+            "code_postal": "1040",
+            "ville": "Bruxelles",
+            "pays": "Belgique",
+            "defaut": 0,
+            "active": 1,
+            "id_utilisateur": 5
+        }
+    ],
+    "produit": [
+        {
+            "nom": "Vélo de route Sprint 300",
+            "desc": "Vélo de route léger pour les longues distances.",
+            "spec_tech": "Cadre en aluminium, 18 vitesses Shimano, freins à disque.",
+            "couleur": "rouge",
+            "image": "images/velo1.jpg",
+            "prix": 749.99,
+            "stock": 5,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "VTT RockTrail 500",
+            "desc": "Vélo tout-terrain robuste pour les sentiers accidentés.",
+            "spec_tech": "Cadre en acier, suspension avant, 21 vitesses.",
+            "couleur": "noir",
+            "image": "images/velo2.jpg",
+            "prix": 599.00,
+            "stock": 3,
+            "ventes": 2,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo de ville UrbanRide",
+            "desc": "Idéal pour les déplacements urbains quotidiens.",
+            "spec_tech": "Cadre en aluminium, 7 vitesses, porte-bagages intégré.",
+            "couleur": "gris",
+            "image": "images/velo3.jpg",
+            "prix": 459.50,
+            "stock": 12,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo électrique E-Move 250",
+            "desc": "Assistance électrique pour vos trajets quotidiens.",
+            "spec_tech": "Batterie 36V, moteur 250W, autonomie 60 km.",
+            "couleur": "bleu",
+            "image": "images/velo4.jpg",
+            "prix": 1299.99,
+            "stock": 4,
+            "ventes": 1,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo pliant Compact Fold",
+            "desc": "Facile à transporter et à ranger.",
+            "spec_tech": "Cadre pliable, 6 vitesses, roues 20 pouces.",
+            "couleur": "vert",
+            "image": "images/velo5.jpg",
+            "prix": 379.00,
+            "stock": 10,
+            "ventes": 2,
+            "actif": 1
+        },
+        {
+            "nom": "VTT TrailBlazer X7",
+            "desc": "Parfait pour l’aventure hors route.",
+            "spec_tech": "Suspension intégrale, 27 vitesses, freins hydrauliques.",
+            "couleur": "orange",
+            "image": "images/velo6.jpg",
+            "prix": 899.99,
+            "stock": 6,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo pour enfants KidZoom",
+            "desc": "Vélo adapté aux enfants de 4 à 6 ans.",
+            "spec_tech": "Roues 14 pouces, stabilisateurs amovibles.",
+            "couleur": "rose",
+            "image": "images/velo7.jpg",
+            "prix": 149.90,
+            "stock": 15,
+            "ventes": 1,
+            "actif": 1
+        },
+        {
+            "nom": "Cruiser BeachTime",
+            "desc": "Style rétro pour balades en bord de mer.",
+            "spec_tech": "Selle large, guidon haut, cadre bas.",
+            "couleur": "turquoise",
+            "image": "images/velo8.jpg",
+            "prix": 329.00,
+            "stock": 7,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Fixie StreetRider",
+            "desc": "Design épuré pour la ville.",
+            "spec_tech": "Transmission fixe, cadre acier, freins avant.",
+            "couleur": "jaune",
+            "image": "images/velo9.jpg",
+            "prix": 299.90,
+            "stock": 8,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo trekking Adventure",
+            "desc": "Pour les longues randonnées sur route ou chemin.",
+            "spec_tech": "Cadre renforcé, pneus larges, garde-boue.",
+            "couleur": "marron",
+            "image": "images/velo10.jpg",
+            "prix": 689.00,
+            "stock": 2,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo fitness SpeedFit",
+            "desc": "Pour un usage sportif sur route.",
+            "spec_tech": "Cadre aluminium, roues 28 pouces, 24 vitesses.",
+            "couleur": "blanc",
+            "image": "images/velo11.jpg",
+            "prix": 549.00,
+            "stock": 9,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo gravel TerraRide",
+            "desc": "Parfait pour les terrains mixtes.",
+            "spec_tech": "Pneus mixtes, cadre alu/carbone, freins disques.",
+            "couleur": "bordeaux",
+            "image": "images/velo12.jpg",
+            "prix": 1199.00,
+            "stock": 3,
+            "ventes": 3,
+            "actif": 1
+        },
+        {
+            "nom": "VTT junior TrailKid 20",
+            "desc": "VTT pour jeunes aventuriers.",
+            "spec_tech": "Roues 20 pouces, suspension avant, 6 vitesses.",
+            "couleur": "bleu",
+            "image": "images/velo13.jpg",
+            "prix": 229.00,
+            "stock": 11,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo cargo FamilyBike",
+            "desc": "Transportez vos enfants ou vos courses facilement.",
+            "spec_tech": "Bac avant, cadre renforcé, freins puissants.",
+            "couleur": "noir",
+            "image": "images/velo14.jpg",
+            "prix": 1599.00,
+            "stock": 1,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo vintage RetroStyle",
+            "desc": "Look classique avec composants modernes.",
+            "spec_tech": "Cadre acier, vitesses internes, selle cuir.",
+            "couleur": "crème",
+            "image": "images/velo15.jpg",
+            "prix": 499.00,
+            "stock": 6,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo électrique Speedster",
+            "desc": "Pour des trajets rapides avec assistance électrique.",
+            "spec_tech": "Moteur 500W, batterie 48V, autonomie 80 km.",
+            "couleur": "argent",
+            "image": "images/velo16.jpg",
+            "prix": 1790.00,
+            "stock": 5,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo gravel léger AllRoad GX",
+            "desc": "Cadre carbone, parfait pour la performance sur tout terrain.",
+            "spec_tech": "Groupeset GRX, freins hydrauliques, pneus 40mm.",
+            "couleur": "gris mat",
+            "image": "images/velo17.jpg",
+            "prix": 2099.00,
+            "stock": 3,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo cargo électrique UrbanHauler",
+            "desc": "Solution idéale pour les professionnels et familles.",
+            "spec_tech": "Moteur central Bosch, autonomie 100 km, double batterie.",
+            "couleur": "vert foncé",
+            "image": "images/velo18.jpg",
+            "prix": 3590.00,
+            "stock": 2,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "VTT électrique E-Trail 800",
+            "desc": "Vélo tout-terrain électrique pour les pentes raides.",
+            "spec_tech": "Moteur Shimano Steps, suspension intégrale.",
+            "couleur": "noir et rouge",
+            "image": "images/velo19.jpg",
+            "prix": 2899.00,
+            "stock": 4,
+            "ventes": 0,
+            "actif": 1
+        },
+        {
+            "nom": "Vélo urbain connecté SmartRide",
+            "desc": "Vélo connecté avec antivol GPS intégré.",
+            "spec_tech": "Application mobile, éclairage automatique, port USB.",
+            "couleur": "bleu nuit",
+            "image": "images/velo20.jpg",
+            "prix": 1390.00,
+            "stock": 7,
+            "ventes": 0,
+            "actif": 1
+        }
+    ],
+    "commande": [
+        {
+            "date_commande": "2025-04-15",
+            "etat": "Expediee",
+            "prix_total": 1798.00,
+            "frais_livraison": 0.00,
+            "id_utilisateur": 1,
+            "id_adresse": 8
+        },
+        {
+            "date_commande": "2025-05-21",
+            "etat": "Validee",
+            "prix_total": 2207.89,
+            "frais_livraison": 20.00,
+            "id_utilisateur": 4,
+            "id_adresse": 4
+        },
+        {
+            "date_commande": "2025-05-20",
+            "etat": "Validee",
+            "prix_total": 2997.00,
+            "frais_livraison": 0.00,
+            "id_utilisateur": 1,
+            "id_adresse": 1
+        }
+    ],
+    "produit_commande": [
+        {
+            "quantite": 1,
+            "prix": 599.00,
+            "id_produit": 2,
+            "id_commande": 1
+        },
+        {
+            "quantite": 1,
+            "prix": 1199.00,
+            "id_produit": 12,
+            "id_commande": 1
+        },
+        {
+            "quantite": 1,
+            "prix": 1299.99,
+            "id_produit": 4,
+            "id_commande": 2
+        },
+        {
+            "quantite": 2,
+            "prix": 379.00,
+            "id_produit": 5,
+            "id_commande": 2
+        },
+        {
+            "quantite": 1,
+            "prix": 149.90,
+            "id_produit": 7,
+            "id_commande": 2
+        },
+        {
+            "quantite": 1,
+            "prix": 599.00,
+            "id_produit": 2,
+            "id_commande": 3
+        },
+        {
+            "quantite": 2,
+            "prix": 1199.00,
+            "id_produit": 12,
+            "id_commande": 3
+        }
+    ],
+    "roles": [
+        {
+            "nom": "admin"
+        },
+        {
+            "nom": "superclient"
+        },
+        {
+            "nom": "client"
+        }
+    ],
+    "roles_utilisateur": [
+        {
+            "id_utilisateur": 1,
+            "id_role": 1
+        },
+        {
+            "id_utilisateur": 1,
+            "id_role": 2
+        },
+        {
+            "id_utilisateur": 1,
+            "id_role": 3
+        },
+        {
+            "id_utilisateur": 2,
+            "id_role": 1
+        },
+        {
+            "id_utilisateur": 2,
+            "id_role": 2
+        },
+        {
+            "id_utilisateur": 2,
+            "id_role": 3
+        },
+        {
+            "id_utilisateur": 3,
+            "id_role": 1
+        },
+        {
+            "id_utilisateur": 3,
+            "id_role": 2
+        },
+        {
+            "id_utilisateur": 3,
+            "id_role": 3
+        },
+        {
+            "id_utilisateur": 4,
+            "id_role": 2
+        },
+        {
+            "id_utilisateur": 5,
+            "id_role": 3
+        },
+        {
+            "id_utilisateur": 6,
+            "id_role": 3
+        },
+        {
+            "id_utilisateur": 7,
+            "id_role": 3
+        }
+    ]
+}

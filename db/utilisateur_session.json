@@ -1,0 +1,1 @@
+{"id": 1, "nom": "Guiren", "prenom": "Anice", "email": "anice@example.com", "password": "testAnice", "telephone": "07.06.05.04.03", "adresse": {"id": 29, "numero": "30", "type_voie": "rue", "nom_voie": "de la vache", "code_postal": "59000", "ville": "Lille", "pays": "France", "defaut": 1, "active": 1, "id_utilisateur": 1}, "roles": ["admin", "superclient", "client"]}
