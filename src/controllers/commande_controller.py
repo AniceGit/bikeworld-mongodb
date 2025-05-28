@@ -1,8 +1,10 @@
-import sqlite3
 import streamlit as st
+from pymongo import MongoClient
+from typing import Any, Dict
 from src.models.commande import Commande
 from src.models.adresse import Adresse
 from src.models.utilisateur import Utilisateur
+from src.models.panier import Panier
 from src.models.produit_commande import ProduitCommande
 
 
@@ -16,137 +18,17 @@ def supprimer_commande(id_commande: int) -> None:
     Returns:
         None: 
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
+    # Connexion au serveur MongoDB local
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["bikeworld-mongo"]
 
-        cur.execute(
-            """ \
-                SELECT id,
-                    date_commande,
-                    etat,
-                    prix_total,
-                    frais_livraison,
-                    id_utilisateur,
-                    id_adresse
-                FROM commande WHERE id = :id_commande
-            """,
-            {"id_commande": id_commande},
-        )
+    collection = db["commande"]
 
-        result = cur.fetchone()
-
-        if result is None:
-            raise Exception(f"Commande {id_commande} introuvable.")
-
-        (
-            id,
-            date_commande,
-            etat,
-            prix_total,
-            frais_livraison,
-            id_utilisateur,
-            id_adresse,
-        ) = result
-        commande = Commande(
-            id,
-            date_commande,
-            etat,
-            prix_total,
-            frais_livraison,
-            id_utilisateur,
-            id_adresse,
-        )
-
-        if commande.etat == "Validee":
-            # Récupération des produits / quantités / des produits de la commande pour remettre à jour les stocks/ventes sur le produit
-            cur.execute(
-                """
-                SELECT id_produit, quantite
-                FROM produit_commande 
-                WHERE id_commande = :id_commande
-            """,
-                {"id_commande": id_commande},
-            )
-            result = cur.fetchall()
-
-            if result is None:
-                raise Exception(f"Commande {id_commande} introuvable.")
-
-            for id_produit, quantite in result:
-                cur.execute(
-                    """
-                    UPDATE produit
-                    SET stock = stock + :quantite, ventes = ventes - :quantite
-                    WHERE id = :id
-                """,
-                    {"quantite": quantite, "id": id_produit},
-                )
-
-            # Suppression des lignes (produit_commande) de la commande
-            cur.execute(
-                """
-                DELETE FROM produit_commande WHERE id_commande = :id_commande
-            """,
-                {"id_commande": id_commande},
-            )
-            result = cur.fetchall()
-
-            cur.execute(
-                """
-                DELETE FROM commande WHERE id = :id
-            """,
-                {"id": id_commande},
-            )
-        else:
-            print("etat ne permet pas la suppression")
+    collection.deleteOne({"_id": id_commande})
 
 
-def calculer_total_commande(id_commande: int) -> float:
-    """
-    Calcule le total de la commande
 
-    Args:
-        id (int): Identifiant de la commande
-
-    Returns:
-        float: montant total de la commande
-    """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-
-        # Récupération des lignes de produits pour la commande
-        cur.execute(
-            """
-            SELECT quantite, prix FROM commande_produit
-            WHERE id_commande = ?
-        """,
-            (id_commande,),
-        )
-        lignes = cur.fetchall()
-
-        total_produits = sum(quantite * prix for quantite, prix in lignes)
-
-        # Récupération des frais de livraison
-        cur.execute(
-            """
-            SELECT frais_livraison FROM commande
-            WHERE id = ?
-        """,
-            (id_commande,),
-        )
-        result = cur.fetchone()
-        if result is None:
-            raise Exception(f"Commande {id_commande} introuvable.")
-
-        # 0 pour éviter le None
-        frais_livraison = float(result[0]) or 0.00
-
-        total_commande = total_produits + frais_livraison
-
-        return total_commande
-
-
-def get_commandes_by_utilisateur(id_utilisateur: int) -> list[Commande] | None:
+def get_commandes_by_utilisateur(id_utilisateur: str) -> list[Commande] | None:
     """
     Récupère toutes les commandes de l'utilisateur passé en paramètre.
 
@@ -156,79 +38,34 @@ def get_commandes_by_utilisateur(id_utilisateur: int) -> list[Commande] | None:
     Returns:
         list[Commande] | None : liste des commandes de l'utilisateur
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
+    # Connexion au serveur MongoDB local
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["bikeworld-mongo"]
 
-        # Récupération des commandes du client
-        cur.execute(
-            """
-            SELECT id, date_commande, etat, prix_total, frais_livraison, id_utilisateur, id_adresse
-            FROM commande
-            WHERE id_utilisateur = :id_utilisateur
-        """,
-            {"id_utilisateur": id_utilisateur},
-        )
-        entetes = cur.fetchall()
+    collection = db["commande"]
 
-        commandes = []
+    commandes = []
+    for commande in collection.find({"id_utilisateur": id_utilisateur}):
+        adresse = commande["adresse"]
+        mon_adresse = Adresse(0, adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0, 0)
 
-        for (
-            id_commande,
-            date_commande,
-            etat,
-            prix_total,
-            frais_livrason,
-            id_utilisateur,
-            id_adresse,
-        ) in entetes:
-
-            # Récupération des lignes de commande de chaque commande
-            cur.execute(
-                """
-                SELECT id, quantite, prix, id_produit, id_commande
-                FROM produit_commande
-                WHERE id_commande = :id_commande
-            """,
-                {"id_commande": id_commande},
-            )
-            result_lignes = cur.fetchall()
-
-            lignes = []
-
-            for (
-                id_produit_commande,
-                quantite,
-                prix,
-                id_produit,
-                id_commande,
-            ) in result_lignes:
-                lignes.append(
-                    ProduitCommande(
-                        id=id_produit_commande,
-                        quantite=quantite,
-                        prix=prix,
-                        id_produit=id_produit,
-                        id_commande=id_commande,
-                    )
-                )
-
-            ma_commande = Commande(
-                id=id_commande,
-                date_commande=date_commande,
-                etat=etat,
-                prix_total=prix_total,
-                frais_livraison=frais_livrason,
-                id_utilisateur=id_utilisateur,
-                id_adresse=id_adresse,
-            )
-            ma_commande.liste_produit_commande = lignes
-            commandes.append(ma_commande)
+        ma_commande = Commande(commande["_id"], commande["date_commande"], commande["etat"], commande["prix_total"], commande["frais_livraison"], commande["id_utilisateur"])
+        ma_commande.id_adresse = mon_adresse
+        lignes = []
+        cpt = 0
+        for ligne in commande["produit_commande"]:
+            cpt += 1
+            ma_ligne = ProduitCommande(cpt, ligne["quantite"], ligne["prix"], ligne["id_produit"], ma_commande.id)
+            lignes.append(ma_ligne)
+        commandes.append(ma_commande)
 
     return commandes
 
 
+# Deprecated
 def get_adresse_commande(id_adresse: int) -> Adresse | None:
     """
+    Deprecated
     Récupère l'adresse de la commande passée en paramètre.
 
     Args:
@@ -300,67 +137,59 @@ def transformer_panier() -> bool:
     Returns:
         None: 
     """
-    panier = st.session_state.panier
+    panier: Panier = st.session_state.panier
 
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
 
-        user:Utilisateur = st.session_state["utilisateur"]
-        if user.adresse is None:
-            return False
-        # Insertion de la commande
-        cur.execute(
-            """
-            INSERT INTO commande (date_commande, etat, prix_total, frais_livraison, id_utilisateur, id_adresse)
-            VALUES (:date_commande,
-                    :etat,
-                    :prix_total,
-                    :frais_livraison,
-                    :id_utilisateur,
-                    :id_adresse)
-        """,
-            {
-                "date_commande": panier.date_panier,
-                "etat": "Validee",
-                "prix_total": panier.total_panier,
-                "frais_livraison": (
-                    panier.frais_livraison if panier.total_panier < 1500 else 0.00
-                ),
-                "id_utilisateur": user.id,
-                "id_adresse": user.adresse.id
-            },
-        )
+    user:Utilisateur = st.session_state["utilisateur"]
+    if user.adresse is None:
+        return False
 
-        # retour de l'id créé
-        cmd_id = cur.lastrowid
 
-        # Insertion des lignes de commande
-        for ligne in panier.liste_produits_quantite:
+    commande = dict()
+    commande["date_commande"] = panier.date_panier
+    commande["etat"] =  "Validee"
+    commande["prix_total"] = panier.total_panier
+    commande["frais_livraison"] = panier.frais_livraison
 
-            cur.execute(
-                """
-                INSERT INTO produit_commande (id_commande, id_produit, quantite, prix)
-                VALUES (:id_commande,
-                        :id_produit,
-                        :quantite,
-                        :prix)
-            """,
-                {
-                    "id_commande": cmd_id,
-                    "id_produit": ligne["produit_id"],
-                    "quantite": ligne["quantite"],
-                    "prix": ligne["prix"],
-                },
-            )
-            # Mise à jour du stock et des ventes du produit
-            cur.execute(
-                """
-                UPDATE produit
-                SET stock = stock - :quantite, ventes = ventes + :quantite
-                WHERE id = :id
-            """,
-                {"quantite": ligne["quantite"], "id": ligne["produit_id"]},
-            )
+    ma_ligne = dict()
+    for pc in panier.liste_produits_quantite:
+        ma_ligne["quantite"] = pc.quantie
+        ma_ligne["prix"] = pc.prix
+        ma_ligne["id_produit"] = pc.id_produit
+        ma_ligne["nom"] = pc.nom
+        ma_ligne["desc"] = pc.desc
+        ma_ligne["spec_tech"] = pc.spec_tech
+        ma_ligne["couleur"] = pc.couleur
+        ma_ligne["image"] = pc.image
+
+        commande["produit_commande"].append(ma_ligne)
+    
+    commande["id_utilisateur"] = panier["utilisateur"].id
+
+    adresse = panier["adresse"]
+
+    mon_adresse = dict()
+    mon_adresse["numero"] = adresse.numero
+    mon_adresse["type_voie"] = adresse.type_voie
+    mon_adresse["nom_voie"] = adresse.nom_voie
+    mon_adresse["code_postal"] = adresse.code_postal
+    mon_adresse["ville"] = adresse.ville
+    mon_adresse["pays"] = adresse.pays
+
+    commande["id_adresse"] = mon_adresse
+
+    print(f"Commande: {commande}")
+
+    client = MongoClient("mongodb://localhost:27017/")
+
+    # Récupération (ou création) d'une base de données
+    db = client["bikeworld-mongo"]
+
+
+    # destruction de la collection des utilisateurs
+    collection = db["commande"]
+    result_commandes = collection.insert_one(commande)
+
     return True
 
 
@@ -373,72 +202,29 @@ def get_commandes() -> list[Commande]:
     Returns:
         list[Commande] | None: liste de toutes commandes (mode admin) 
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
+    # Connexion au serveur MongoDB local
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["bikeworld-mongo"]
 
-        # Récupération des commandes du client
-        cur.execute(
-            """
-            SELECT id, date_commande, etat, prix_total, frais_livraison, id_utilisateur, id_adresse
-            FROM commande
-        """)
-        entetes = cur.fetchall()
+    collection = db["commande"]
 
-        commandes = []
+    commandes = []
+    for commande in collection.find():
+        adresse = commande["adresse"]
+        mon_adresse = Adresse(0, adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0, 0)
 
-        for (
-            id_commande,
-            date_commande,
-            etat,
-            prix_total,
-            frais_livrason,
-            id_utilisateur,
-            id_adresse,
-        ) in entetes:
-
-            # Récupération des lignes de commande de chaque commande
-            cur.execute(
-                """
-                SELECT id, quantite, prix, id_produit, id_commande
-                FROM produit_commande
-                WHERE id_commande = :id_commande
-            """,
-                {"id_commande": id_commande},
-            )
-            result_lignes = cur.fetchall()
-
-            lignes = []
-
-            for (
-                id_produit_commande,
-                quantite,
-                prix,
-                id_produit,
-                id_commande,
-            ) in result_lignes:
-                lignes.append(
-                    ProduitCommande(
-                        id=id_produit_commande,
-                        quantite=quantite,
-                        prix=prix,
-                        id_produit=id_produit,
-                        id_commande=id_commande,
-                    )
-                )
-
-            ma_commande = Commande(
-                id=id_commande,
-                date_commande=date_commande,
-                etat=etat,
-                prix_total=prix_total,
-                frais_livraison=frais_livrason,
-                id_utilisateur=id_utilisateur,
-                id_adresse=id_adresse,
-            )
-            ma_commande.liste_produit_commande = lignes
-            commandes.append(ma_commande)
+        ma_commande = Commande(commande["_id"], commande["date_commande"], commande["etat"], commande["prix_total"], commande["frais_livraison"], commande["id_utilisateur"])
+        ma_commande.id_adresse = mon_adresse
+        lignes = []
+        cpt = 0
+        for ligne in commande["produit_commande"]:
+            cpt += 1
+            ma_ligne = ProduitCommande(cpt, ligne["quantite"], ligne["prix"], ligne["id_produit"], ma_commande.id)
+            lignes.append(ma_ligne)
+        commandes.append(ma_commande)
 
     return commandes
+
 
 
 def modifier_etat_commande(id_commande: int, etat: str) -> int | None:
@@ -452,15 +238,11 @@ def modifier_etat_commande(id_commande: int, etat: str) -> int | None:
     Returns:
         
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
+    # Connexion au serveur MongoDB local
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["bikeworld-mongo"]
 
-        cur.execute(
-            """
-            UPDATE commande
-            SET etat = :etat
-            WHERE id = :id
-        """,
-            {"id": id_commande, "etat": etat},
-        )
+    collection = db["commande"]
+
+    collection.update_one({"_id": id_commande}, {"$set": {"etat": etat}})
 

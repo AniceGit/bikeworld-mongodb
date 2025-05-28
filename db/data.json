@@ -516,9 +516,7 @@
                 "nom_voie": "Montorgueil",
                 "code_postal": "75002",
                 "ville": "Paris",
-                "pays": "France",
-                "defaut": 0,
-                "active": 1
+                "pays": "France"
             }
         },
         {
@@ -550,9 +548,7 @@
                 "nom_voie": "Pasteur",
                 "code_postal": "67000",
                 "ville": "Strasbourg",
-                "pays": "France",
-                "defaut": 1,
-                "active": 1
+                "pays": "France"
             }
         },
         {
@@ -579,9 +575,7 @@
                 "nom_voie": "de la Convention",
                 "code_postal": "75015",
                 "ville": "Paris",
-                "pays": "France",
-                "defaut": 1,
-                "active": 1
+                "pays": "France"
             }
         }
     ]
