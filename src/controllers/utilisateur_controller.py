@@ -1,5 +1,6 @@
 import streamlit as st
 import json, os
+from pymongo import MongoClient
 from models.utilisateur import Utilisateur
 from models.adresse import Adresse
 
@@ -38,7 +39,7 @@ def creer_utilisateur(
     nom: str, prenom: str, email: str, password: str, telephone: str
 ) -> None:
     """
-    Insère un nouvel utilisateur dans la base SQLite.
+    Insère un nouvel utilisateur dans la base MongoDB.
 
     Args:
         nom (str): Nom de l'utilisateur.
@@ -51,23 +52,26 @@ def creer_utilisateur(
         None
 
     Effets de bord:
-        Insère une nouvelle ligne dans la table `utilisateur`.
+        Insère un nouvel utilisateur dans la collection `utilisateur`.
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """
-            INSERT INTO utilisateur (nom, prenom, email, password, telephone)
-            VALUES (:nom, :prenom, :email, :password, :telephone)
-        """,
-            {
-                "nom": nom,
-                "prenom": prenom,
-                "email": email,
-                "password": password,
-                "telephone": telephone,
-            },
-        )
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["bikeworld-mongo"]
+    collection = db["utilisateur"]
+
+    utilisateur = Utilisateur(id=0, nom=nom, prenom=prenom, email=email, password=password, telephone=telephone)
+
+    utilisateur_to_insert = {
+        "nom": utilisateur.nom,
+        "prenom": utilisateur.prenom,
+        "email": utilisateur.email,
+        "password": utilisateur.password,
+        "telephone": utilisateur.telephone,
+        "roles":utilisateur.roles,
+        "adresse":utilisateur.adresses
+    }
+
+    result = collection.insert_one(utilisateur_to_insert)
+    print(f"Utilisateur inséré avec l'id : {result.inserted_id}")
 
 
 # ----connexion d'un utilisateur avec utilisation d'un get-email pour vérifier si cet utilisateur existe et s'il a ce password----#
@@ -91,6 +95,7 @@ def connecter_utilisateur(email: str, password: str) -> bool:
     if utilisateur and utilisateur.password == password:
         st.session_state["utilisateur"] = utilisateur
         st.success(f"Bienvenue, {utilisateur.prenom} !")
+        print("id user avant json save  ", utilisateur.id)
         sauvegarder_json_utilisateur(utilisateur)
         return True
     else:
@@ -108,243 +113,212 @@ def get_utilisateur_by_email(email: str) -> Utilisateur | None:
     Returns:
         Utilisateur | None: Instance Utilisateur si trouvé, sinon None.
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM utilisateur WHERE email = :email", {"email": email})
-        result_utilisateur = cur.fetchone()
-        if result_utilisateur:
-            utilisateur: Utilisateur = Utilisateur(
-                result_utilisateur[0],
-                result_utilisateur[1],
-                result_utilisateur[2],
-                result_utilisateur[3],
-                result_utilisateur[4],
-                result_utilisateur[5],
-            )
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["bikeworld-mongo"]
+    collection = db["utilisateur"]
 
-            cur.execute(
-                "SELECT * FROM adresse WHERE id_utilisateur = :id_utilisateur AND defaut= :defaut AND active= :active",
-                {"id_utilisateur": utilisateur.id, "defaut": 1, "active":1},
-            )
-            result_adresse = cur.fetchone()
-            if result_adresse:
-                adresse: Adresse = Adresse(
-                    result_adresse[0],
-                    result_adresse[1],
-                    result_adresse[2],
-                    result_adresse[3],
-                    result_adresse[4],
-                    result_adresse[5],
-                    result_adresse[6],
-                    result_adresse[7],
-                    result_adresse[8],
-                    result_adresse[9],
-                )
-                utilisateur.adresse = adresse
-            return utilisateur
+    result:dict = collection.find_one({"email" :  email})
+    if result:
+        utilisateur = Utilisateur(
+            id = result.get("_id"),
+            nom = result.get("nom"),
+            prenom = result.get("prenom"),
+            email = result.get("email"),
+            password = result.get('password'),
+            telephone = result.get("telephone"),
+            roles = result.get("roles"),
+            adresses = result.get("adresse")
+        )
+        print("id utilisateur  ", result.get("_id"))
+        return utilisateur
+    else :
         return None
 
 def get_adresse_utilisateur_defaut(utilisateur:Utilisateur) -> Adresse | None:
     """
-    Récupère un utilisateur à partir de son email depuis la base de données.
+    Récupère l'adresse par défaut dans la liste d'adresses dans l'utilisateur
 
     Args:
-        email (str): Email de l'utilisateur recherché.
+        utilisateur (Utilisateur): utilisateur
 
     Returns:
-        Utilisateur | None: Instance Utilisateur si trouvé, sinon None.
+        Adresse | None: Instance Adresse si trouvé, sinon None.
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            "SELECT * FROM adresse WHERE id_utilisateur = :id_utilisateur AND defaut= :defaut AND active= :active",
-            {"id_utilisateur": utilisateur.id, "defaut": 1, "active":1},
-        )
-        result_adresse = cur.fetchone()
-        if result_adresse is not None:
-            adresse: Adresse = Adresse(
-                result_adresse[0],
-                result_adresse[1],
-                result_adresse[2],
-                result_adresse[3],
-                result_adresse[4],
-                result_adresse[5],
-                result_adresse[6],
-                result_adresse[7],
-                result_adresse[8],
-                result_adresse[9],
-            )
-            return adresse
+    adresse_defaut:Adresse = None
+    for adresse in utilisateur.adresses:
+        if adresse.defaut == 1:
+            adresse_defaut = adresse
+            return adresse_defaut
     return None
+    
+
+# # -----Récupérer les adresses d'un utilisateur-----#
+# def get_adresses_utilisateur(id: int) -> list[Adresse]:
+#     """
+#     Récupère toutes les adresses actives associées à un utilisateur donné.
+
+#     Args:
+#         id (int): Identifiant de l'utilisateur.
+
+#     Returns:
+#         list[Adresse]: Liste d'objets Adresse.
+
+#     Raises:
+#         Exception: Si aucune adresse n'est trouvée.
+#     """
+#     with sqlite3.connect("bikeworld.db") as conn:
+#         cur = conn.cursor()
+#         cur.execute("SELECT * FROM adresse WHERE id_utilisateur = :id and active = :active", {"id": id, "active": 1})
+#         result_adresses = cur.fetchall()
+#         if result_adresses is None:
+#             raise Exception(f"Aucune adresse")
+
+#         adresses = []
+#         for (
+#             id,
+#             numero,
+#             type_voie,
+#             nom_voie,
+#             code_postal,
+#             ville,
+#             pays,
+#             defaut,
+#             active,
+#             id_utilisateur,
+#         ) in result_adresses:
+#             adresses.append(
+#                 Adresse(
+#                     id,
+#                     numero,
+#                     type_voie,
+#                     nom_voie,
+#                     code_postal,
+#                     ville,
+#                     pays,
+#                     defaut,
+#                     active,
+#                     id_utilisateur,
+#                 )
+#             )
+#         return adresses
+
+# # -----Créer adresse-----#
+# def creer_adresse(
+#     numero: str,
+#     type_voie: str,
+#     nom_voie: str,
+#     code_postal: str,
+#     ville: str,
+#     pays: str,
+#     defaut: int,
+#     active: int,
+#     id_utilisateur: int,
+# ) -> bool:
+#     """
+#     Insère une nouvelle adresse dans la base de données.
+
+#     Args:
+#         numero (str): Numéro de rue.
+#         type_voie (str): Type de voie (rue, avenue...).
+#         nom_voie (str): Nom de la voie.
+#         code_postal (str): Code postal.
+#         ville (str): Ville.
+#         pays (str): Pays.
+#         defaut (int): Indicateur si adresse par défaut (1 = oui, 0 = non).
+#         active (int): Indicateur si adresse active (1 = oui, 0 = non).
+#         id_utilisateur (int): Identifiant de l'utilisateur propriétaire.
+
+#     Returns:
+#         bool: True si l'insertion a réussi.
+
+#     Effets de bord:
+#         Affiche un message de succès via Streamlit.
+#     """
+#     with sqlite3.connect("bikeworld.db") as conn:
+#         cur = conn.cursor()
+#         cur.execute(
+#             """
+#             INSERT INTO adresse (numero, type_voie, nom_voie, code_postal, ville, pays, defaut, active, id_utilisateur)
+#             VALUES (:numero, :type_voie, :nom_voie, :code_postal, :ville, :pays, :defaut, :active, :id_utilisateur)
+#         """,
+#             {
+#                 "numero": numero,
+#                 "type_voie": type_voie,
+#                 "nom_voie": nom_voie,
+#                 "code_postal": code_postal,
+#                 "ville": ville,
+#                 "pays": pays,
+#                 "defaut": defaut,
+#                 "active": active,
+#                 "id_utilisateur": id_utilisateur,
+#             },
+#         )
+#         st.success("Nouvelle adresse créée avec succès !")
+#         return True
 
 
-# -----Récupérer les adresses d'un utilisateur-----#
-def get_adresses_utilisateur(id: int) -> list[Adresse]:
-    """
-    Récupère toutes les adresses actives associées à un utilisateur donné.
+# # -----Modifier adresse-----#
+# def modifier_adresse_utilisateur(nouvelle_adresse: Adresse) -> None:
+#     """
+#     Met à jour une adresse existante dans la base de données.
 
-    Args:
-        id (int): Identifiant de l'utilisateur.
+#     Args:
+#         nouvelle_adresse (Adresse): Objet Adresse contenant les nouvelles données.
 
-    Returns:
-        list[Adresse]: Liste d'objets Adresse.
+#     Returns:
+#         None
 
-    Raises:
-        Exception: Si aucune adresse n'est trouvée.
-    """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM adresse WHERE id_utilisateur = :id and active = :active", {"id": id, "active": 1})
-        result_adresses = cur.fetchall()
-        if result_adresses is None:
-            raise Exception(f"Aucune adresse")
+#     Effets de bord:
+#         Met à jour la ligne correspondante dans la table `adresse`.
+#     """
+#     with sqlite3.connect("bikeworld.db") as conn:
+#         cur = conn.cursor()
+#         cur.execute(
+#             """UPDATE adresse SET numero = :numero, type_voie = :type_voie, nom_voie = :nom_voie, code_postal = :code_postal, ville = :ville, pays = :pays, defaut = :defaut, active = :active WHERE id = :id_adresse
+#                     """,
+#             {
+#                 "numero": nouvelle_adresse.numero,
+#                 "type_voie": nouvelle_adresse.type_voie,
+#                 "nom_voie": nouvelle_adresse.nom_voie,
+#                 "code_postal": nouvelle_adresse.code_postal,
+#                 "ville": nouvelle_adresse.ville,
+#                 "pays": nouvelle_adresse.pays,
+#                 "defaut": nouvelle_adresse.defaut,
+#                 "active": nouvelle_adresse.active,
+#                 "id_adresse": nouvelle_adresse.id,
+#             },
+#         )
 
-        adresses = []
-        for (
-            id,
-            numero,
-            type_voie,
-            nom_voie,
-            code_postal,
-            ville,
-            pays,
-            defaut,
-            active,
-            id_utilisateur,
-        ) in result_adresses:
-            adresses.append(
-                Adresse(
-                    id,
-                    numero,
-                    type_voie,
-                    nom_voie,
-                    code_postal,
-                    ville,
-                    pays,
-                    defaut,
-                    active,
-                    id_utilisateur,
-                )
-            )
-        return adresses
+# # -----Supprimer adresse-----#
+# def supprimer_adresse_utilisateur(id_adresse:int, utilisateur:Utilisateur) -> bool:
+#     """
+#     Désactive une adresse (active = 0, defaut = 0) dans la base de données.
 
-# -----Créer adresse-----#
-def creer_adresse(
-    numero: str,
-    type_voie: str,
-    nom_voie: str,
-    code_postal: str,
-    ville: str,
-    pays: str,
-    defaut: int,
-    active: int,
-    id_utilisateur: int,
-) -> bool:
-    """
-    Insère une nouvelle adresse dans la base de données.
+#     Args:
+#         id_adresse (int): Identifiant de l'adresse à désactiver.
+#         utilisateur (Utilisateur): Utilisateur propriétaire de l'adresse.
 
-    Args:
-        numero (str): Numéro de rue.
-        type_voie (str): Type de voie (rue, avenue...).
-        nom_voie (str): Nom de la voie.
-        code_postal (str): Code postal.
-        ville (str): Ville.
-        pays (str): Pays.
-        defaut (int): Indicateur si adresse par défaut (1 = oui, 0 = non).
-        active (int): Indicateur si adresse active (1 = oui, 0 = non).
-        id_utilisateur (int): Identifiant de l'utilisateur propriétaire.
+#     Returns:
+#         bool: True si la suppression (désactivation) a réussi.
 
-    Returns:
-        bool: True si l'insertion a réussi.
-
-    Effets de bord:
-        Affiche un message de succès via Streamlit.
-    """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """
-            INSERT INTO adresse (numero, type_voie, nom_voie, code_postal, ville, pays, defaut, active, id_utilisateur)
-            VALUES (:numero, :type_voie, :nom_voie, :code_postal, :ville, :pays, :defaut, :active, :id_utilisateur)
-        """,
-            {
-                "numero": numero,
-                "type_voie": type_voie,
-                "nom_voie": nom_voie,
-                "code_postal": code_postal,
-                "ville": ville,
-                "pays": pays,
-                "defaut": defaut,
-                "active": active,
-                "id_utilisateur": id_utilisateur,
-            },
-        )
-        st.success("Nouvelle adresse créée avec succès !")
-        return True
-
-
-# -----Modifier adresse-----#
-def modifier_adresse_utilisateur(nouvelle_adresse: Adresse) -> None:
-    """
-    Met à jour une adresse existante dans la base de données.
-
-    Args:
-        nouvelle_adresse (Adresse): Objet Adresse contenant les nouvelles données.
-
-    Returns:
-        None
-
-    Effets de bord:
-        Met à jour la ligne correspondante dans la table `adresse`.
-    """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """UPDATE adresse SET numero = :numero, type_voie = :type_voie, nom_voie = :nom_voie, code_postal = :code_postal, ville = :ville, pays = :pays, defaut = :defaut, active = :active WHERE id = :id_adresse
-                    """,
-            {
-                "numero": nouvelle_adresse.numero,
-                "type_voie": nouvelle_adresse.type_voie,
-                "nom_voie": nouvelle_adresse.nom_voie,
-                "code_postal": nouvelle_adresse.code_postal,
-                "ville": nouvelle_adresse.ville,
-                "pays": nouvelle_adresse.pays,
-                "defaut": nouvelle_adresse.defaut,
-                "active": nouvelle_adresse.active,
-                "id_adresse": nouvelle_adresse.id,
-            },
-        )
-
-# -----Supprimer adresse-----#
-def supprimer_adresse_utilisateur(id_adresse:int, utilisateur:Utilisateur) -> bool:
-    """
-    Désactive une adresse (active = 0, defaut = 0) dans la base de données.
-
-    Args:
-        id_adresse (int): Identifiant de l'adresse à désactiver.
-        utilisateur (Utilisateur): Utilisateur propriétaire de l'adresse.
-
-    Returns:
-        bool: True si la suppression (désactivation) a réussi.
-
-    Effets de bord:
-        Met à jour la base.
-        Sauvegarde la session utilisateur dans un fichier JSON.
-        Affiche un message de succès via Streamlit.
-    """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """UPDATE adresse SET defaut = :defaut, active = :active WHERE id = :id_adresse
-                    """,
-            {
-                "defaut":0,
-                "active":0,
-                "id_adresse": id_adresse,
-            },
-        )
-        st.success("Adresse supprimée avec succès !")
-        return True
+#     Effets de bord:
+#         Met à jour la base.
+#         Sauvegarde la session utilisateur dans un fichier JSON.
+#         Affiche un message de succès via Streamlit.
+#     """
+#     with sqlite3.connect("bikeworld.db") as conn:
+#         cur = conn.cursor()
+#         cur.execute(
+#             """UPDATE adresse SET defaut = :defaut, active = :active WHERE id = :id_adresse
+#                     """,
+#             {
+#                 "defaut":0,
+#                 "active":0,
+#                 "id_adresse": id_adresse,
+#             },
+#         )
+#         st.success("Adresse supprimée avec succès !")
+#         return True
 
 
 # -----modification de l'utilisateur-----#
@@ -363,23 +337,31 @@ def modifier_utilisateur(nouvel_utilisateur: Utilisateur) -> bool:
         Sauvegarde la session utilisateur dans un fichier JSON.
         Affiche un message de succès via Streamlit.
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, telephone = :telephone WHERE id = :id_nouvel_utilisateur
-                    """,
-            {
-                "nom": nouvel_utilisateur.nom,
-                "prenom": nouvel_utilisateur.prenom,
-                "email": nouvel_utilisateur.email,
-                "telephone": nouvel_utilisateur.telephone,
-                "id_nouvel_utilisateur": nouvel_utilisateur.id,
-            },
-        )
-        sauvegarder_json_utilisateur(nouvel_utilisateur)
-        st.success("Utilisateur modifié avec succès !")
-        return True
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["bikeworld-mongo"]
+    collection = db["utilisateur"]
 
+    result = collection.update_one(
+            {"_id": nouvel_utilisateur.id},
+            {
+                "$set":{
+                    "nom":nouvel_utilisateur.nom,
+                    "prenom":nouvel_utilisateur.prenom,
+                    "email":nouvel_utilisateur.email,
+                    "telephone":nouvel_utilisateur.telephone,
+                    "adresse":nouvel_utilisateur.adresses
+                }
+            })
+    if result.matched_count == 0:
+        st.warning("Aucun utilisateur trouvé avec cet ID.")
+        return False
+    if result.modified_count == 0:
+        st.warning("Aucune modification effectuée.")
+        return False
+    
+    sauvegarder_json_utilisateur(nouvel_utilisateur)
+    st.success("Utilisateur modifié avec succès !")
+    return True
 
 # -----déconnexion de l'utilisateur-----#
 def deconnecter_utilisateur() -> str:
@@ -451,21 +433,23 @@ def get_utilisateur_by_id(id_utilisateur: int) -> Utilisateur | None:
     tuple: Un tuple contenant les informations de l'utilisateur si l'email est trouvé,
            ou None si aucun utilisateur n'est trouvé avec cet email.
     """
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["bikeworld-mongo"]
+    collection = db["utilisateur"]
 
-        cur.execute(
-                """
-                SELECT id, nom, prenom, email, password, telephone
-                FROM utilisateur
-                WHERE id = :id_utilisateur
-            """,
-                {"id_utilisateur": id_utilisateur}
-            )
+    result:dict = collection.find_one({"_id" :  id_utilisateur})
 
-        result_utilisateur = cur.fetchone()
+    utilisateur = Utilisateur(
+        id = result.get("_id"),
+        nom = result.get("nom"),
+        prenom = result.get("prenom"),
+        email = result.get("email"),
+        telephone = result.get("telephone"),
+        roles = result.get("roles"),
+        adresses = result.get("adresse")
+    )
 
-        id, nom, prenom, email, password, telephone = result_utilisateur
-        utilisateur = Utilisateur(id, nom, prenom, email, password, telephone)
-
+    if utilisateur:
         return utilisateur
+    else :
+        return None
