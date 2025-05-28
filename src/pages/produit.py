@@ -4,6 +4,12 @@ from controllers.produit_controller import get_details_produit
 from models.produit import afficher_image_stock
 from src.tools.session import init_session
 import base64
+from pymongo import MongoClient
+
+#Connexion à MongoDB
+client = MongoClient("mongodb://localhost:27017/")
+db = client["bikeworld-mongo"]  
+collection = db["produit"]
 
 init_session()
 afficher_sidebar()
@@ -75,9 +81,7 @@ with col1:
         )
         st.markdown(
                         f"""
-                        
                             <p style='font-size: 20px; font-weight: bold; color: #f1ab00; margin: 0;'>{afficher_image_stock(produit.stock)}</p>
-                        
                         """,
                         unsafe_allow_html=True
                     )

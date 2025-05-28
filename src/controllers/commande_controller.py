@@ -1,4 +1,4 @@
-import sqlite3
+
 import streamlit as st
 from src.models.commande import Commande
 from src.models.adresse import Adresse
