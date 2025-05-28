@@ -1,5 +1,5 @@
 import pymongo
-from models.produit import Produit
+from src.models.produit import Produit
 
 #Connexion à MongoDB
 client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -23,9 +23,11 @@ def get_produits() -> list[Produit]:
             raise Exception(f"Aucun article")
     
     for produit in result:
+        if "_id" not in produit:
+            raise Exception(f"il manque un id dans le document")
         produits.append(
             Produit(
-                  produit["id"],
+                  produit["_id"],
                   produit["nom"],
                   produit["desc"],
                   produit["spec_tech"],
@@ -52,11 +54,11 @@ def get_details_produit(id_produit: int) -> Produit:
         Exception: Si le produit n'est pas trouvé dans la base de données.
     """
 
-    result = collection.find_one({"id":id_produit})
+    result = collection.find_one({"_id":id_produit})
     if result is None:
             raise Exception(f"Aucun articles")
     produit = Produit(
-                result["id"],
+                result["_id"],
                 result["nom"],
                 result["desc"],
                 result["spec_tech"],
@@ -85,20 +87,21 @@ def get_top_3_ventes() -> list[Produit]:
     if not result:
         raise Exception("Produit non trouvé")
     
-    produits = []    
+    produits = []
+     
     for produit in result:
         produits.append(
             Produit(
-                  produit["id"],
-                  produit["nom"],
-                  produit["desc"],
-                  produit["spec_tech"],
-                  produit["couleur"],
-                  produit["image"],
-                  produit["prix"],
-                  produit["stock"],
-                  produit["ventes"],
-                  produit["actif"],))
+                produit["_id"],
+                produit["nom"],
+                produit["nom"],
+                produit["spec_tech"],
+                produit["couleur"],
+                produit["image"],
+                produit["prix"],
+                produit["stock"],
+                produit["ventes"],
+                produit["actif"],))
     return produits
 
 
@@ -115,7 +118,7 @@ def get_produit_nom_by_id(id_produit: int) -> str:
     Raises:
         Exception: Si le produit n'est pas trouvé dans la base de données.
     """
-    result = collection.find_one({"id":id_produit},{"nom":1})
+    result = collection.find_one({"_id":id_produit},{"nom":1})
     if not result:
         raise Exception("Produit non trouvé")
     return result["nom"]
@@ -148,4 +151,4 @@ def modifier_produit(id, nom, description, spec_tech, couleur, image, prix, stoc
             "actif": actif
         }
     
-    collection.update_one({"id":id},{"$set":update_data})
+    collection.update_one({"_id":id},{"$set":update_data})
