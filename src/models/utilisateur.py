@@ -1,6 +1,6 @@
 from src.models.adresse import Adresse
 from src.models.adresse import adresse_from_dict
-import sqlite3
+
 
 class Utilisateur:
 

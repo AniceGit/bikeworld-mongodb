@@ -1,5 +1,4 @@
 import streamlit as st
-import sqlite3
 import json, os
 from models.utilisateur import Utilisateur
 from models.adresse import Adresse
