@@ -1,5 +1,4 @@
 import streamlit as st
-import sqlite3
 import json, os
 from pymongo import MongoClient
 from models.utilisateur import Utilisateur

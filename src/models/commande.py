@@ -7,8 +7,7 @@ class Commande:
         etat: str,
         prix_total: float,
         frais_livraison: float,
-        id_utilisateur: int,
-        id_adresse: int,
+        id_utilisateur: int
     ) -> None:
         """Instanciation d'une Commande
 
@@ -19,7 +18,7 @@ class Commande:
             prix_total (float): prix total de la commande
             frais_livraison (float): frais de livraison
             id_utilisateur (int): identifiant de l'utilisateur propriétaire de la commande (fk)
-            id_adresse (int): identifiant de l'adresse de livraison (fk)
+            id_adresse (Adresse): adresse de livraison
             liste_produit_commande (list[ProduitCommande]): liste des lignes de la commande
         """
         self.id = id
@@ -28,5 +27,5 @@ class Commande:
         self.prix_total = prix_total
         self.frais_livraison = frais_livraison
         self.id_utilisateur = id_utilisateur
-        self.id_adresse = id_adresse
+        self.id_adresse = None
         self.liste_produit_commande = None

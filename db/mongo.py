@@ -27,7 +27,7 @@ def init_db(data) -> None:
     print(f"Population de la collection utilisateur")
     # Boucle pour insert les utilisateurs du fichier data.json
     utilisateurs: dict = data.get("utilisateur")
-    print(f"utilisateurs: {utilisateurs}")
+    # print(f"utilisateurs: {utilisateurs}")
     result_utilisateurs = collection.insert_many(utilisateurs)
     # print(f"IDs insérés dans la collection utilisateur: {result_utilisateurs.inserted_ids}")
 

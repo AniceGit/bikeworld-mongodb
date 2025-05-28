@@ -1,6 +1,10 @@
-import sqlite3
-from models.produit import Produit
+import pymongo
+from src.models.produit import Produit
 
+#Connexion à MongoDB
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client["bikeworld-mongo"]  
+collection = db["produit"]
 
 def get_produits() -> list[Produit]:
     """
@@ -13,33 +17,27 @@ def get_produits() -> list[Produit]:
         Exception: Si aucun produit n'est trouvé dans la base de données.
     """
 
-    lignes = []
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """ \
-                    SELECT id,
-                        nom,
-                        desc,
-                        spec_tech, 
-                        couleur, 
-                        image, 
-                        prix, 
-                        stock,
-                        ventes,
-                        actif
-                    FROM produit 
-                """
-        )
-        result = cur.fetchall()
-        if result is None:
-            raise Exception(f"Aucun articles")
-
-        for id, nom, desc, spec_tech, couleur, image, prix, stock, ventes, actif in result:
-            lignes.append(
-                Produit(id, nom, desc, spec_tech, couleur, image, prix, stock, ventes, actif)
-            )
-    return lignes
+    produits = []
+    result = collection.find({})
+    if result is None:
+            raise Exception(f"Aucun article")
+    
+    for produit in result:
+        if "_id" not in produit:
+            raise Exception(f"il manque un id dans le document")
+        produits.append(
+            Produit(
+                  produit["_id"],
+                  produit["nom"],
+                  produit["desc"],
+                  produit["spec_tech"],
+                  produit["couleur"],
+                  produit["image"],
+                  produit["prix"],
+                  produit["stock"],
+                  produit["ventes"],
+                  produit["actif"],))
+    return produits
 
 
 def get_details_produit(id_produit: int) -> Produit:
@@ -56,24 +54,22 @@ def get_details_produit(id_produit: int) -> Produit:
         Exception: Si le produit n'est pas trouvé dans la base de données.
     """
 
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """
-            SELECT id, nom, desc, spec_tech, couleur, image, prix, stock, ventes, actif
-            FROM produit
-            WHERE id = ?
-        """,
-            (id_produit,),
-        )
-        result = cur.fetchone()
-
-        if not result:
-            raise Exception("Produit non trouvé")
-
-        id, nom, desc, spec_tech, couleur, image, prix, stock, ventes, actif = result
-        produit = Produit(id, nom, desc, spec_tech, couleur, image, prix, stock, ventes, actif)
-        return produit
+    result = collection.find_one({"_id":id_produit})
+    if result is None:
+            raise Exception(f"Aucun articles")
+    produit = Produit(
+                result["_id"],
+                result["nom"],
+                result["desc"],
+                result["spec_tech"],
+                result["couleur"],
+                result["image"],
+                result["prix"],
+                result["stock"],
+                result["ventes"],
+                result["actif"]  
+    )
+    return produit
 
 
 def get_top_3_ventes() -> list[Produit]:
@@ -87,27 +83,27 @@ def get_top_3_ventes() -> list[Produit]:
         Exception: Si aucun produit n'est trouvé dans la base de données.
     """
 
-    with sqlite3.connect("bikeworld.db") as conn:
-            cur = conn.cursor()
-            cur.execute(
-                """
-                SELECT id, nom, desc, spec_tech, couleur, image, prix, stock, ventes, actif
-                FROM produit
-                WHERE actif = 1
-                ORDER BY ventes DESC
-                LIMIT 3
-            """
-            )
-    result = cur.fetchall()
+    result = collection.find({"actif":1}).sort("ventes",-1).limit(3)
     if not result:
         raise Exception("Produit non trouvé")
-
+    
     produits = []
-    for id, nom, desc, spec_tech, couleur, image, prix, stock, ventes, actif in result:
+     
+    for produit in result:
         produits.append(
-            Produit(id, nom, desc, spec_tech, couleur, image, prix, stock, ventes, actif)
-        )
+            Produit(
+                produit["_id"],
+                produit["nom"],
+                produit["nom"],
+                produit["spec_tech"],
+                produit["couleur"],
+                produit["image"],
+                produit["prix"],
+                produit["stock"],
+                produit["ventes"],
+                produit["actif"],))
     return produits
+
 
 def get_produit_nom_by_id(id_produit: int) -> str:
     """
@@ -122,22 +118,11 @@ def get_produit_nom_by_id(id_produit: int) -> str:
     Raises:
         Exception: Si le produit n'est pas trouvé dans la base de données.
     """
-        
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """
-            SELECT nom
-            FROM produit
-            WHERE id = :id_produit
-        """,
-            {"id_produit": id_produit},
-        )
-        result = cur.fetchone()
-        if not result:
-            raise Exception("Produit non trouvé")
-        nom_produit = result
-        return nom_produit
+    result = collection.find_one({"_id":id_produit},{"nom":1})
+    if not result:
+        raise Exception("Produit non trouvé")
+    return result["nom"]
+
 
 def modifier_produit(id, nom, description, spec_tech, couleur, image, prix, stock, actif):
     """
@@ -155,20 +140,15 @@ def modifier_produit(id, nom, description, spec_tech, couleur, image, prix, stoc
         actif (int): L'état actif du produit (1 pour actif, 0 pour inactif).
     """
     
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """
-            UPDATE produit
-            SET nom = :nom,
-                desc = :desc,
-                spec_tech = :spec_tech,
-                couleur = :couleur,
-                image = :image,
-                prix = :prix,
-                stock = :stock,
-                actif = :actif
-            WHERE id = :id
-        """,
-            {"id": id, "nom": nom, "desc": description, "spec_tech": spec_tech, "couleur": couleur, "image": image, "prix": prix, "stock": stock, "actif" :actif},
-        )
+    update_data = {
+            "nom": nom,
+            "desc": description,
+            "spec_tech": spec_tech,
+            "couleur": couleur,
+            "image": image,
+            "prix": prix,
+            "stock": stock,
+            "actif": actif
+        }
+    
+    collection.update_one({"_id":id},{"$set":update_data})
