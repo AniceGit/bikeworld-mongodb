@@ -5,7 +5,7 @@ from controllers.produit_controller import get_produit_nom_by_id, get_produits, 
 from controllers.utilisateur_controller import get_utilisateur_by_id
 from pages.sidebar import afficher_sidebar
 from src.tools.session import init_session
-from src.controllers.commande_controller import get_adresse_commande, get_commandes, modifier_etat_commande, supprimer_commande
+from src.controllers.commande_controller import get_commandes, modifier_etat_commande, supprimer_commande
 
 
 # Initialisation de la session
