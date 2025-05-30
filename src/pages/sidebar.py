@@ -27,6 +27,8 @@ def afficher_sidebar() -> None:
             st.sidebar.text("ADMIN")
             st.sidebar.page_link("pages/admin_commandes.py", label="Admin Commandes")
             st.sidebar.page_link("pages/admin_produits.py", label="Admin Produits")
+            st.sidebar.page_link("pages/admin_graph_ventes.py", label="Admin Graph")
+
 
     st.sidebar.text("SHOP")
     st.sidebar.page_link("pages/catalogue.py", label="Catalogue")
