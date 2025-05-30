@@ -5,9 +5,6 @@ from models.adresse import Adresse
 from controllers.utilisateur_controller import (
     modifier_utilisateur,
     sauvegarder_json_utilisateur,
-    get_adresses_utilisateur,
-    modifier_adresse_utilisateur,
-    supprimer_adresse_utilisateur,
     get_adresse_utilisateur_defaut
 )
 from tools.session import init_session
@@ -47,20 +44,8 @@ def profil_vue() -> None:
 
     # Récupération des infos de l'utilisateur connecté
     utilisateur: Utilisateur = st.session_state["utilisateur"]
-    if utilisateur.adresse :
-        adresse: Adresse = utilisateur.adresse
-    else : 
-        adresse: Adresse = get_adresse_utilisateur_defaut(utilisateur)
+    adresse: Adresse = get_adresse_utilisateur_defaut(utilisateur)
 
-    # Affichage du profil
-    # st.write(f"Nom : {utilisateur.nom}")
-    # st.write(f"Prénom : {utilisateur.prenom}")
-    # st.write(f"Email : {utilisateur.email}")
-    # st.write(f"Téléphone : {utilisateur.telephone}")
-    # if adresse:
-    #     st.write(f"Adresse : {adresse.__str__()}")
-    # else : 
-    #     st.write("Adresse : ")
     st.markdown("### 👤 Informations ")
 
     st.markdown(f"""
@@ -87,17 +72,16 @@ def profil_vue() -> None:
     telephone = st.text_input("Téléphone", key="telephone_key")
 
     # On récupère toutes les adresses liées à cet utilisateur et on les met dans une liste
-    adresses: list[Adresse] = get_adresses_utilisateur(utilisateur.id)
+    adresses: list[Adresse] = utilisateur.adresses
     option = st.selectbox(
         "Choisissez parmi vos adresses",
-        (adresse.__str__() for adresse in adresses),
+        (adresse.__str__() for adresse in adresses if adresse.active),
         index=None,
         placeholder="Choisir...",
     )
 
     # Button disabled si pas d'adresse choisie et si adresse choisie alors button à None si aucun changement
     button_disabled = option == None
-    button_delete_disabled = True
     if option is not None:
         adresse_selectionnee = next(
             (adresse for adresse in adresses if adresse.__str__() == option), None
@@ -107,10 +91,9 @@ def profil_vue() -> None:
             and utilisateur.prenom == prenom
             and utilisateur.email == email
             and utilisateur.telephone == telephone
-            and ((adresse == None and adresse_selectionnee.id == None) or (adresse and adresse.id == adresse_selectionnee.id))
+            and ((adresse == None and adresse_selectionnee == None) or (adresse and adresse == adresse_selectionnee))
         ):
             button_disabled = True
-        button_delete_disabled = False
 
     # On affecte les valeurs insérées au nouvel utilisateur et on le modifie en db, session et json puis on refresh la page
     if st.button("💾 Modifier", disabled=button_disabled):
@@ -120,17 +103,12 @@ def profil_vue() -> None:
         nouvel_utilisateur.email = email if email else utilisateur.email
         nouvel_utilisateur.telephone = telephone if telephone else utilisateur.telephone
 
-        # On récupère l'adresse selectionnée et on lui change sa valeur défaut pour en faire l'adresse par défaut puis on la modifie en db
-        nouvelle_adresse: Adresse = adresse_selectionnee
-        nouvelle_adresse.defaut = 1
-        modifier_adresse_utilisateur(nouvelle_adresse)
-        # On modifie la valeur défaut de l'adresse précédente (actuellement dans l'objet utilisateur) et on la modifie en db
-        if adresse :
-            adresse.defaut = 0
-            modifier_adresse_utilisateur(adresse)
-
-        # On affecte l'adresse sélectionnée à l'objet nouvel_utilisateur qu'on sauvegardera en db, session et json
-        nouvel_utilisateur.adresse = nouvelle_adresse
+        if adresse.__str__() != adresse_selectionnee.__str__():
+            for a in nouvel_utilisateur.adresses:
+                if a.__str__() == adresse.__str__():
+                    a.defaut = 0
+                if a.__str__() == adresse_selectionnee.__str__():
+                    a.defaut = 1
 
         modifier_utilisateur(nouvel_utilisateur)
         st.session_state["utilisateur"] = nouvel_utilisateur

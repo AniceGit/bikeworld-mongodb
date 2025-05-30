@@ -1,7 +1,8 @@
+from bson import ObjectId
+
 class Adresse:
     def __init__(
         self,
-        id: int,
         numero: str,
         type_voie: str,
         nom_voie: str,
@@ -29,7 +30,6 @@ class Adresse:
         Returns:
             None
         """
-        self.id = id
         self.numero = numero
         self.type_voie = type_voie
         self.nom_voie = nom_voie
@@ -47,7 +47,6 @@ class Adresse:
             dict: Un dictionnaire représentant l'adresse avec ses attributs.
         """
         return {
-            "id": self.id,
             "numero": self.numero,
             "type_voie": self.type_voie,
             "nom_voie": self.nom_voie,
@@ -80,7 +79,6 @@ def adresse_from_dict(data: dict) -> Adresse:
         Adresse: Une instance de la classe Adresse initialisée avec les données fournies.
     """
     return Adresse(
-        id=data["id"],
         numero=data["numero"],
         type_voie=data["type_voie"],
         nom_voie=data["nom_voie"],
