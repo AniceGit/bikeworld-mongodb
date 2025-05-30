@@ -51,7 +51,7 @@ def get_commandes_by_utilisateur(id_utilisateur: ObjectId) -> list[Commande] | N
     for commande in collection.find({"id_utilisateur": ObjectId(id_utilisateur)}):
         # print(f"commande: {commande}")
         adresse = commande["adresse"]
-        mon_adresse = Adresse(0, adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0)
+        mon_adresse = Adresse(adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0)
 
         ma_commande = Commande(commande["_id"], commande["date_commande"], commande["etat"], commande["prix_total"], commande["frais_livraison"], commande["id_utilisateur"])
         ma_commande.adresse = mon_adresse
@@ -94,31 +94,31 @@ def transformer_panier() -> bool:
     ma_ligne = dict()
     for pc in panier.liste_produits_quantite:
         # print(f"pc: {pc}")
-        ma_ligne["quantite"] = pc["quantite"]
-        ma_ligne["prix"] = pc["prix"]
-        ma_ligne["id_produit"] = pc["produit_id"]
-        ma_ligne["nom"] = pc["produit"]
-        ma_ligne["desc"] = pc["desc"]
-        ma_ligne["spec_tech"] = pc["spec_tech"]
-        ma_ligne["couleur"] = pc["couleur"]
-        ma_ligne["image"] = pc["image"]
+        ma_ligne["quantite"] = pc.get("quantite")
+        ma_ligne["prix"] = pc.get("prix")
+        ma_ligne["id_produit"] = pc.get("produit_id")
+        ma_ligne["nom"] = pc.get("produit")
+        ma_ligne["desc"] = pc.get("desc")
+        ma_ligne["spec_tech"] = pc.get("spec_tech")
+        ma_ligne["couleur"] = pc.get("couleur")
+        ma_ligne["image"] = pc.get("image")
 
         commande["produit_commande"].append(ma_ligne)
 
     commande["id_utilisateur"] = user.id
     # print(f"session user adresse: {user.adresses}")
     for adresse in user.adresses:
-        if adresse["defaut"] == 1:
+        if adresse.defaut == 1:
             # print(f"adresse par défaut: {adresse}")
             break
 
     mon_adresse = dict()
-    mon_adresse["numero"] = adresse["numero"]
-    mon_adresse["type_voie"] = adresse["type_voie"]
-    mon_adresse["nom_voie"] = adresse["nom_voie"]
-    mon_adresse["code_postal"] = adresse["code_postal"]
-    mon_adresse["ville"] = adresse["ville"]
-    mon_adresse["pays"] = adresse["pays"]
+    mon_adresse["numero"] = adresse.numero
+    mon_adresse["type_voie"] = adresse.type_voie
+    mon_adresse["nom_voie"] = adresse.nom_voie
+    mon_adresse["code_postal"] = adresse.code_postal
+    mon_adresse["ville"] = adresse.ville
+    mon_adresse["pays"] = adresse.pays
 
     commande["adresse"] = mon_adresse
 
@@ -156,7 +156,7 @@ def get_commandes() -> list[Commande]:
     for commande in collection.find():
         print(f"Ma commande: {commande}")
         adresse = commande["adresse"]
-        mon_adresse = Adresse(0, adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0)
+        mon_adresse = Adresse(adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0)
 
         ma_commande = Commande(commande["_id"], commande["date_commande"], commande["etat"], commande["prix_total"], commande["frais_livraison"], commande["id_utilisateur"])
         ma_commande.adresse = mon_adresse
