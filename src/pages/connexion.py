@@ -82,7 +82,7 @@ def connexion_vue() -> None:
     st.markdown('<p class="custom-write">Connexion</p>', unsafe_allow_html=True)
 
     email = st.text_input("Email")
-    mdp = st.text_input("Mot de passe")
+    mdp = st.text_input("Mot de passe", type="password")
 
     if st.button("⏻ Se connecter"):
         if email and mdp:
