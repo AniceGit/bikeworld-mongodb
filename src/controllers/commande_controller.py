@@ -2,14 +2,16 @@ import streamlit as st
 import sqlite3
 from pymongo import MongoClient
 from typing import Any, Dict
+from bson import ObjectId
 from src.models.commande import Commande
 from src.models.adresse import Adresse
 from src.models.utilisateur import Utilisateur
+from src.models.produit import Produit
 from src.models.panier import Panier
 from src.models.produit_commande import ProduitCommande
 
 
-def supprimer_commande(id_commande: int) -> None:
+def supprimer_commande(id_commande: str) -> None:
     """
     Supprime une commande avec son id dans la base de données.
 
@@ -25,7 +27,7 @@ def supprimer_commande(id_commande: int) -> None:
 
     collection = db["commande"]
 
-    collection.deleteOne({"_id": id_commande})
+    collection.delete_one({"_id": ObjectId(id_commande)})
 
 
 
@@ -46,7 +48,7 @@ def get_commandes_by_utilisateur(id_utilisateur: str) -> list[Commande] | None:
     collection = db["commande"]
 
     commandes = []
-    for commande in collection.find({"id_utilisateur": id_utilisateur}):
+    for commande in collection.find({"id_utilisateur": ObjectId(id_utilisateur)}):
         adresse = commande["adresse"]
         mon_adresse = Adresse(0, adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0, 0)
 
@@ -56,77 +58,12 @@ def get_commandes_by_utilisateur(id_utilisateur: str) -> list[Commande] | None:
         cpt = 0
         for ligne in commande["produit_commande"]:
             cpt += 1
-            ma_ligne = ProduitCommande(cpt, ligne["quantite"], ligne["prix"], ligne["id_produit"], ma_commande.id)
+            ma_ligne = ProduitCommande(cpt, ligne["quantite"], ligne["prix"], ligne["id_produit"], ligne["nom"], ligne["desc"], ligne["spec_tech"], ligne["couleur"], ligne["image"])
             lignes.append(ma_ligne)
+        ma_commande.liste_produit_commande = lignes
         commandes.append(ma_commande)
 
     return commandes
-
-
-# Deprecated
-def get_adresse_commande(id_adresse: int) -> Adresse | None:
-    """
-    Deprecated
-    Récupère l'adresse de la commande passée en paramètre.
-
-    Args:
-        id (int): Identifiant de la commande
-
-    Returns:
-        Adresse | None: adresse utilisée pour la commande
-    """
-    adresse_commande = None
-    with sqlite3.connect("bikeworld.db") as conn:
-        cur = conn.cursor()
-
-        cur.execute(
-            """
-                SELECT id,
-                    numero,
-                    type_voie,
-                    nom_voie,
-                    code_postal,
-                    ville,
-                    pays,
-                    defaut,
-                    active,
-                    id_utilisateur
-                FROM adresse WHERE id = :id_adresse
-            """,
-            {"id_adresse": id_adresse},
-        )
-
-        result = cur.fetchone()
-
-        if result is None:
-            raise Exception(f"Adresse de la commande {id_adresse} introuvable.")
-
-        (
-            id,
-            numero,
-            type_voie,
-            nom_voie,
-            code_postal,
-            ville,
-            pays,
-            defaut,
-            active,
-            id_utilisateur,
-        ) = result
-        adresse_commande = Adresse(
-            id,
-            numero,
-            type_voie,
-            nom_voie,
-            code_postal,
-            ville,
-            pays,
-            defaut,
-            active,
-            id_utilisateur,
-        )
-
-    return adresse_commande
 
 
 def transformer_panier() -> bool:
@@ -139,10 +76,10 @@ def transformer_panier() -> bool:
         None: 
     """
     panier: Panier = st.session_state.panier
-
+    print(f"Panier: {panier}")
 
     user:Utilisateur = st.session_state["utilisateur"]
-    if user.adresse is None:
+    if user.adresses is None:
         return False
 
 
@@ -154,17 +91,18 @@ def transformer_panier() -> bool:
 
     ma_ligne = dict()
     for pc in panier.liste_produits_quantite:
-        ma_ligne["quantite"] = pc.quantie
-        ma_ligne["prix"] = pc.prix
-        ma_ligne["id_produit"] = pc.id_produit
-        ma_ligne["nom"] = pc.nom
-        ma_ligne["desc"] = pc.desc
-        ma_ligne["spec_tech"] = pc.spec_tech
-        ma_ligne["couleur"] = pc.couleur
-        ma_ligne["image"] = pc.image
+        print(f"pc: {pc}")
+        ma_ligne["quantite"] = pc["quantite"]
+        ma_ligne["prix"] = pc["prix"]
+        ma_ligne["id_produit"] = pc["produit_id"]
+        ma_ligne["nom"] = pc["produit"]
+        # ma_ligne["desc"] = pc.desc
+        # ma_ligne["spec_tech"] = pc.spec_tech
+        # ma_ligne["couleur"] = pc.couleur
+        # ma_ligne["image"] = pc.image
 
         commande["produit_commande"].append(ma_ligne)
-    
+
     commande["id_utilisateur"] = panier["utilisateur"].id
 
     adresse = panier["adresse"]
@@ -211,6 +149,7 @@ def get_commandes() -> list[Commande]:
 
     commandes = []
     for commande in collection.find():
+        print(f"Ma commande: {commande}")
         adresse = commande["adresse"]
         mon_adresse = Adresse(0, adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0, 0)
 
@@ -220,7 +159,7 @@ def get_commandes() -> list[Commande]:
         cpt = 0
         for ligne in commande["produit_commande"]:
             cpt += 1
-            ma_ligne = ProduitCommande(cpt, ligne["quantite"], ligne["prix"], ligne["id_produit"], ma_commande.id)
+            ma_ligne = ProduitCommande(cpt, ligne["quantite"], ligne["prix"], ligne["id_produit"], ligne["nom"], ligne["desc"], ligne["spec_tech"], ligne["couleur"], ligne["image"])
             lignes.append(ma_ligne)
         commandes.append(ma_commande)
 
@@ -245,5 +184,5 @@ def modifier_etat_commande(id_commande: int, etat: str) -> int | None:
 
     collection = db["commande"]
 
-    collection.update_one({"_id": id_commande}, {"$set": {"etat": etat}})
+    collection.update_one({"_id": ObjectId(id_commande)}, {"$set": {"etat": etat}})
 
