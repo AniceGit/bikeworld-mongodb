@@ -2,7 +2,6 @@ import time
 import streamlit as st
 import pandas as pd
 from controllers.produit_controller import get_produit_nom_by_id, get_produits, modifier_produit
-from controllers.utilisateur_controller import get_utilisateur_by_id
 from pages.sidebar import afficher_sidebar
 from src.tools.session import init_session
 from src.controllers.commande_controller import get_commandes, modifier_etat_commande, supprimer_commande

@@ -5,10 +5,11 @@ from src.tools.session import init_session
 from pages.sidebar import afficher_sidebar
 from src.controllers.commande_controller import (
     supprimer_commande,
-    get_commandes_by_utilisateur,
-    get_adresse_commande,
+    get_commandes_by_utilisateur
 )
 from src.controllers.produit_controller import get_produit_nom_by_id
+from src.models.adresse import Adresse
+
 
 # Initialisation de la session
 init_session()
@@ -22,6 +23,7 @@ afficher_sidebar()
 st.title("Vos commandes")
 
 # Récupération des commandes du client
+# print(f"id_utilisateur: {type(st.session_state["utilisateur"].id)}, {st.session_state["utilisateur"].id}")
 commandes = get_commandes_by_utilisateur(st.session_state["utilisateur"].id)
 
 if not commandes:
@@ -64,7 +66,7 @@ else:
         if cmd:
             st.subheader(f"🧾 Détails de la commande {cmd.id}")
             st.write(f"Date : {cmd.date_commande}")
-            adresse = get_adresse_commande(cmd.id_adresse)
+            adresse: Adresse = cmd.adresse
             st.write(
                 f"Adresse : {adresse.numero} {adresse.type_voie} {adresse.nom_voie}, {adresse.code_postal} {adresse.ville}"
             )

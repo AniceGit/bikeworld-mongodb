@@ -10,11 +10,11 @@ class ProduitCommande:
             quantite (int): quantite commandee
             prix (float): prix unitaire du produit lors de la commande
             id_produit (int): identifiant du produit commande (fk)
-            nom: 
-            desc
-            spec_tech
-            couleur
-            image
+            nom (str): nom du produit
+            desc (str): description du produit
+            spec_tech (str): specifications techniques du prooduit
+            couleur (str): couleur du produit
+            image (str): URI de l'image du produit
         """
         self.id = id
         self.quantite = quantite

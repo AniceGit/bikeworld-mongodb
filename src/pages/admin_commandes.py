@@ -1,13 +1,12 @@
 import time
 import streamlit as st
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+from src.models.adresse import Adresse
 from controllers.produit_controller import get_produit_nom_by_id
 from controllers.utilisateur_controller import get_utilisateur_by_id
 from pages.sidebar import afficher_sidebar
 from src.tools.session import init_session
-from controllers.commande_controller import get_commandes, modifier_etat_commande, supprimer_commande
+from src.controllers.commande_controller import get_commandes, modifier_etat_commande, supprimer_commande
 
 # Initialisation de la session
 init_session()
@@ -95,7 +94,7 @@ else:
         if cmd:
             st.subheader(f"🧾 Détails de la commande {cmd.id}")
             st.write(f"Date : {cmd.date_commande}")
-            adresse = get_adresse_commande(cmd.id_adresse)
+            adresse: Adresse = cmd.adresse
             st.write(
                 f"Adresse : {adresse.numero} {adresse.type_voie} {adresse.nom_voie}, {adresse.code_postal} {adresse.ville}"
             )

@@ -7,13 +7,13 @@ from bson import ObjectId
 class Utilisateur:
 
     def __init__(
-        self, id: int, nom: str, prenom: str, email: str, password: str, telephone: str, adresses: List[Adresse] = None, roles:dict={'admin':False,'superclient':False,'client':True}
+        self, id: ObjectId, nom: str, prenom: str, email: str, password: str, telephone: str, adresses: List[Adresse] = None, roles:dict={'admin':False,'superclient':False,'client':True}
     ) -> None:
         """
         Instancie un objet Utilisateur.
 
         Args:
-            id (int): Identifiant unique de l'utilisateur (clé primaire).
+            id (ObjectId): Identifiant unique de l'utilisateur (clé primaire).
             nom (str): Nom de l'utilisateur.
             prenom (str): Prénom de l'utilisateur.
             email (str): Adresse email de l'utilisateur.

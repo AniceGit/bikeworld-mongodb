@@ -435,11 +435,13 @@ def get_utilisateur_by_id(id_utilisateur: int) -> Utilisateur | None:
 
     result:dict = collection.find_one({"_id" :  id_utilisateur})
 
+
     utilisateur = Utilisateur(
         id = result.get("_id"),
         nom = result.get("nom"),
         prenom = result.get("prenom"),
         email = result.get("email"),
+        password = result.get("password"),
         telephone = result.get("telephone"),
         roles = result.get("roles"),
         adresses = result.get("adresse")

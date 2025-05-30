@@ -31,7 +31,7 @@ def supprimer_commande(id_commande: str) -> None:
 
 
 
-def get_commandes_by_utilisateur(id_utilisateur: str) -> list[Commande] | None:
+def get_commandes_by_utilisateur(id_utilisateur: ObjectId) -> list[Commande] | None:
     """
     Récupère toutes les commandes de l'utilisateur passé en paramètre.
 
@@ -49,11 +49,12 @@ def get_commandes_by_utilisateur(id_utilisateur: str) -> list[Commande] | None:
 
     commandes = []
     for commande in collection.find({"id_utilisateur": ObjectId(id_utilisateur)}):
+        # print(f"commande: {commande}")
         adresse = commande["adresse"]
-        mon_adresse = Adresse(0, adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0, 0)
+        mon_adresse = Adresse(adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0)
 
         ma_commande = Commande(commande["_id"], commande["date_commande"], commande["etat"], commande["prix_total"], commande["frais_livraison"], commande["id_utilisateur"])
-        ma_commande.id_adresse = mon_adresse
+        ma_commande.adresse = mon_adresse
         lignes = []
         cpt = 0
         for ligne in commande["produit_commande"]:
@@ -76,7 +77,7 @@ def transformer_panier() -> bool:
         None: 
     """
     panier: Panier = st.session_state.panier
-    print(f"Panier: {panier}")
+    # print(f"Panier: {panier}")
 
     user:Utilisateur = st.session_state["utilisateur"]
     if user.adresses is None:
@@ -88,24 +89,28 @@ def transformer_panier() -> bool:
     commande["etat"] =  "Validee"
     commande["prix_total"] = panier.total_panier
     commande["frais_livraison"] = panier.frais_livraison
+    commande["produit_commande"] = []
 
     ma_ligne = dict()
     for pc in panier.liste_produits_quantite:
-        print(f"pc: {pc}")
-        ma_ligne["quantite"] = pc["quantite"]
-        ma_ligne["prix"] = pc["prix"]
-        ma_ligne["id_produit"] = pc["produit_id"]
-        ma_ligne["nom"] = pc["produit"]
-        # ma_ligne["desc"] = pc.desc
-        # ma_ligne["spec_tech"] = pc.spec_tech
-        # ma_ligne["couleur"] = pc.couleur
-        # ma_ligne["image"] = pc.image
+        # print(f"pc: {pc}")
+        ma_ligne["quantite"] = pc.get("quantite")
+        ma_ligne["prix"] = pc.get("prix")
+        ma_ligne["id_produit"] = pc.get("produit_id")
+        ma_ligne["nom"] = pc.get("produit")
+        ma_ligne["desc"] = pc.get("desc")
+        ma_ligne["spec_tech"] = pc.get("spec_tech")
+        ma_ligne["couleur"] = pc.get("couleur")
+        ma_ligne["image"] = pc.get("image")
 
         commande["produit_commande"].append(ma_ligne)
 
-    commande["id_utilisateur"] = panier["utilisateur"].id
-
-    adresse = panier["adresse"]
+    commande["id_utilisateur"] = user.id
+    # print(f"session user adresse: {user.adresses}")
+    for adresse in user.adresses:
+        if adresse.defaut == 1:
+            # print(f"adresse par défaut: {adresse}")
+            break
 
     mon_adresse = dict()
     mon_adresse["numero"] = adresse.numero
@@ -115,9 +120,9 @@ def transformer_panier() -> bool:
     mon_adresse["ville"] = adresse.ville
     mon_adresse["pays"] = adresse.pays
 
-    commande["id_adresse"] = mon_adresse
+    commande["adresse"] = mon_adresse
 
-    print(f"Commande: {commande}")
+    # print(f"Commande: {commande}")
 
     client = MongoClient("mongodb://localhost:27017/")
 
@@ -151,16 +156,17 @@ def get_commandes() -> list[Commande]:
     for commande in collection.find():
         print(f"Ma commande: {commande}")
         adresse = commande["adresse"]
-        mon_adresse = Adresse(0, adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0, 0)
+        mon_adresse = Adresse(adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0)
 
         ma_commande = Commande(commande["_id"], commande["date_commande"], commande["etat"], commande["prix_total"], commande["frais_livraison"], commande["id_utilisateur"])
-        ma_commande.id_adresse = mon_adresse
+        ma_commande.adresse = mon_adresse
         lignes = []
         cpt = 0
         for ligne in commande["produit_commande"]:
             cpt += 1
             ma_ligne = ProduitCommande(cpt, ligne["quantite"], ligne["prix"], ligne["id_produit"], ligne["nom"], ligne["desc"], ligne["spec_tech"], ligne["couleur"], ligne["image"])
             lignes.append(ma_ligne)
+        ma_commande.liste_produit_commande = lignes
         commandes.append(ma_commande)
 
     return commandes
