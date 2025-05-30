@@ -3,63 +3,83 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 from src.controllers.produit_controller import get_produits
+from src.controllers.commande_controller import get_commandes
 from pages.sidebar import afficher_sidebar
 from src.tools.session import init_session
+import pymongo
+
+# Connexion à MongoDB
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client["bikeworld-mongo"]
+collection = db["commande"]
 
 # Initialisation de la session
 init_session()
 
-# si l'utilisateur n'est pas connecté, il est redirigé vers la page de connexion
-if not st.session_state["utilisateur"]:
+# Redirection si l'utilisateur n'est pas connecté ou n'est pas admin
+if not st.session_state.get("utilisateur"):
     st.switch_page("pages/connexion.py")
 
-# si l'utilisateur n'est pas "admin", il est redirigé vers la page d'accueil
 if not st.session_state['utilisateur'].is_admin():
     st.switch_page("accueil.py")
 
-# affichage de la sidebar
+# Affichage de la sidebar
 afficher_sidebar()
 
 def afficher_graph_ventes():
     st.title("Graphique des Ventes par Produit")
 
     # Widgets pour sélectionner la période
-    start_date = st.date_input(
-        "Date de début",
-        datetime.now() - pd.DateOffset(days=30))  # Par défaut, 30 jours avant aujourd'hui
+    start_date = st.date_input("Date de début", datetime(2025, 1, 1))
+    end_date = st.date_input("Date de fin", datetime(2025, 12, 31))
 
-    end_date = st.date_input(
-        "Date de fin",
-        datetime.now())  # Par défaut, aujourd'hui
+    # Récupération des commandes depuis MongoDB
+    commandes = list(collection.find({}))
 
-    # Récupération de tous les produits de la base
-    produits = get_produits()  # Assurez-vous que cette fonction retourne une liste de produits
+    if not commandes:
+        st.write("Aucune commande trouvée !")
+        return
 
-    if not produits:
-        st.write("Aucun produit trouvé !")
-    else:
-        data = []
+    # Extraction des noms de produits uniques pour le filtre
+    noms_produits = set()
+    for commande in commandes:
+        for produit in commande.get("produit_commande", []):
+            noms_produits.add(produit["nom"])
+    noms_produits = list(noms_produits)
 
-        # Filtrer les produits en fonction de la période sélectionnée
-        for produit in produits:
-            # Assurez-vous que chaque produit a un attribut 'date' ou similaire
-            # Remplacez 'date' par le champ approprié de votre modèle de données
-            if hasattr(produit, 'date') and start_date <= produit.date <= end_date:
-                data.append(
-                    {
-                        "ID": produit.id,
-                        "Nom": produit.nom,
-                        "Ventes": produit.ventes,
-                    }
-                )
+    # Widget pour sélectionner un produit
+    produit_selectionne = st.selectbox("Sélectionnez un produit", ["Tous"] + noms_produits)
 
-        if not data:
-            st.write("Aucun produit trouvé pour la période sélectionnée !")
-        else:
-            df = pd.DataFrame(data)
+    data = []
 
-            # Création du graphique avec Plotly
-            fig = px.bar(df, x="Nom", y="Ventes", title=f"Ventes par Produit du {start_date} au {end_date}")
-            st.plotly_chart(fig)
+    # Transformation des données pour le graphique
+    for commande in commandes:
+        try:
+            commande_date = datetime.strptime(commande["date_commande"], "%Y-%m-%d").date()
+            if start_date <= commande_date <= end_date:
+                for produit in commande["produit_commande"]:
+                    if produit_selectionne == "Tous" or produit["nom"] == produit_selectionne:
+                        data.append({
+                            "ID": commande["_id"],
+                            "Nom": produit["nom"],
+                            "Ventes": produit["quantite"],
+                            "Date": commande["date_commande"]
+                        })
+        except KeyError as e:
+            st.error(f"Clé manquante dans les données de commande: {e}")
+            continue
+
+    if not data:
+        st.write("Aucune vente trouvée pour la période sélectionnée !")
+        return
+
+    df = pd.DataFrame(data)
+
+    # Agrégation des ventes par produit
+    df_aggregated = df.groupby('Nom')['Ventes'].sum().reset_index()
+
+    # Création du graphique avec Plotly
+    fig = px.bar(df_aggregated, x="Nom", y="Ventes", title=f"Ventes par Produit du {start_date} au {end_date}")
+    st.plotly_chart(fig)
 
 afficher_graph_ventes()
