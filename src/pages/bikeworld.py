@@ -14,13 +14,15 @@ def afficher_produits_stars() -> None:
     Chaque produit est affiché avec son image, son nom, son prix, et un bouton
     pour voir les détails du produit.
     """
-    
-    st.markdown("#")
-    st.markdown(
-    "<h2 style='text-align: center; color: #f1ab00; background-color: transparent;'>Top Ventes</h2>",
-    unsafe_allow_html=True)
-    st.markdown("#")
+
+
+    #st.markdown("#")
+    #st.markdown(
+    #"<h2 style='text-align: center; color: #f1ab00; background-color: transparent;'>Top Ventes</h2>"
+    #unsafe_allow_html=True)
+    #st.markdown("#")
     liste_top_ventes: list[Produit] = get_top_3_ventes()
+        
 
     nb_colonnes = 3
     colonnes = st.columns(nb_colonnes)

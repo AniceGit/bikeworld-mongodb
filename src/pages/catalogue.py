@@ -4,7 +4,7 @@ from controllers.produit_controller import get_produits
 from models.produit import Produit, afficher_image_stock
 import base64
 from src.tools.session import init_session
-from streamlit_card import card
+
 
 init_session()
 

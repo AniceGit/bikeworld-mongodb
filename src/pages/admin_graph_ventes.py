@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
-from controllers.produit_controller import get_produits
+from src.controllers.produit_controller import get_produits
 from pages.sidebar import afficher_sidebar
 from src.tools.session import init_session
 
@@ -20,7 +20,7 @@ if not st.session_state['utilisateur'].is_admin():
 # affichage de la sidebar
 afficher_sidebar()
 
-def afficher_graph_produits():
+def afficher_graph_ventes():
     st.title("Graphique des Ventes par Produit")
 
     # Widgets pour sélectionner la période
@@ -62,4 +62,4 @@ def afficher_graph_produits():
             fig = px.bar(df, x="Nom", y="Ventes", title=f"Ventes par Produit du {start_date} au {end_date}")
             st.plotly_chart(fig)
 
-afficher_graph_produits()
+afficher_graph_ventes()
