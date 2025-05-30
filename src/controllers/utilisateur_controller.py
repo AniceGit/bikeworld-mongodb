@@ -3,6 +3,7 @@ import json, os
 from pymongo import MongoClient
 from models.utilisateur import Utilisateur
 from models.adresse import Adresse, adresse_from_dict
+from bson import ObjectId
 
 # ----création d'un nouvel utilisateur via une inscription----#
 def inscrire_utilisateur(
@@ -432,8 +433,8 @@ def get_utilisateur_by_id(id_utilisateur: int) -> Utilisateur | None:
     client = MongoClient("mongodb://localhost:27017/")
     db = client["bikeworld-mongo"]
     collection = db["utilisateur"]
-
-    result:dict = collection.find_one({"_id" :  id_utilisateur})
+    print (id_utilisateur)
+    result:dict = collection.find_one({"_id" :  ObjectId(id_utilisateur)})
 
 
     utilisateur = Utilisateur(

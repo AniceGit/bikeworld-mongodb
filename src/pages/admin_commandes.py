@@ -61,30 +61,6 @@ else:
     )
 
 
-    #Graphique seaborn des ventes par produit
-    ventes_par_produit=[]
-    for ligne in cmd.liste_produit_commande:
-        produit_nom = get_produit_nom_by_id(ligne.id_produit)
-        quantite = ligne.quantite
-        if produit_nom in ventes_par_produit:
-            ventes_par_produit[produit_nom] += quantite
-        else:
-            ventes_par_produit[produit_nom] = quantite
-
-    # Création du DataFrame pour seaborn
-    df_ventes = pd.DataFrame(list(ventes_par_produit.items()), columns=['Produit', 'Quantité'])
-
-    # Création du graphique avec seaborn
-    plt.figure(figsize=(10, 6))
-    sns.barplot(x='Produit', y='Quantité', data=df_ventes)
-    plt.xlabel("Produit")
-    plt.ylabel("Quantité vendue")
-    plt.title("Ventes par produit")
-    plt.xticks(rotation=45)
-
-    st.pyplot(plt)
-
-
     # Selection de la commande à "gérer" dans la partie basse
     commande_ids = [cmd.id for cmd in commandes]
     selected_id = st.selectbox("Sélectionner une commande :", commande_ids)
