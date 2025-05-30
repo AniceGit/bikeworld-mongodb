@@ -125,6 +125,10 @@ with col1:
                                 "quantite": 1,
                                 "prix": produit.prix,
                                 "total": produit.prix,
+                                "desc": produit.description,
+                                "spec_tech": produit.spec_tech,
+                                "couleur": produit.couleur,
+                                "image": produit.image
                             }
                         )
                         st.session_state.panier = panier

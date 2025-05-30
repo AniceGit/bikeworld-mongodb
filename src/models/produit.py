@@ -1,7 +1,9 @@
+from bson import ObjectId
+
 class Produit:
     def __init__(
         self,
-        id: int,
+        id: ObjectId,
         nom: str,
         description: str,
         spec_tech: str,
