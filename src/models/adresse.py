@@ -16,7 +16,6 @@ class Adresse:
         Initialise une instance de la classe Adresse.
 
         Args:
-            id (int): Identifiant unique de l'adresse (clé primaire).
             numero (str): Numéro de la rue.
             type_voie (str): Type de la voie (exemple : "rue", "avenue", "boulevard").
             nom_voie (str): Nom de la voie.
@@ -25,7 +24,6 @@ class Adresse:
             pays (str): Pays de l'adresse.
             defaut (int): Indicateur si l'adresse est l'adresse par défaut de l'utilisateur (1 = oui, 0 = non).
             active (int): Indicateur si l'adresse est active (1 = oui, 0 = non).
-            id_utilisateur (int): Identifiant de l'utilisateur propriétaire de l'adresse (clé étrangère).
 
         Returns:
             None

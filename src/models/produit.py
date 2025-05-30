@@ -17,7 +17,7 @@ class Produit:
         """Instanciation d'un Produit
 
         Args:
-            id (int): identifiant du produit
+            id (ObjectId): identifiant du produit
             nom (str): Nom du produit
             description (str): Description du produit
             spec_tech (str): Specifications technioques du produit
