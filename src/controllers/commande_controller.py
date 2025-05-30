@@ -1,4 +1,5 @@
 import streamlit as st
+import sqlite3
 from pymongo import MongoClient
 from typing import Any, Dict
 from bson import ObjectId

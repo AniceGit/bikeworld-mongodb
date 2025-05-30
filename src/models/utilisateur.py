@@ -41,7 +41,6 @@ class Utilisateur:
         Returns:
             dict: Un dictionnaire contenant les attributs de l'utilisateur, y compris son adresse et ses rôles.
         """
-        print("CECI EST L'ID  ",self.id)
         return {
             #On converti l'id ObjectId en str afin de pouvoir l'injecter dans un json
             "id": str(self.id),
@@ -86,10 +85,10 @@ def utilisateur_from_dict(data:dict) -> Utilisateur:
     Returns:
         Utilisateur: Instance de la classe Utilisateur initialisée avec les données fournies.
     """
-    print("UTILISATEUR  ", data["nom"])
-    if data.get("adresse"):
-        adresses = [adresse_from_dict(a) for a in data.get("adresse", [])]
-
+    if data.get("adresses"):
+        adresses = [adresse_from_dict(a) for a in data.get("adresses", [])]
+    else :
+        adresses = []
     utilisateur = Utilisateur(
         #On récupère l'id d'un dictionnaire (json) et on le converti en ObjectId (type sur mongoDB)
         ObjectId(data["id"]),
@@ -98,7 +97,7 @@ def utilisateur_from_dict(data:dict) -> Utilisateur:
         data["email"],
         data["password"],
         data["telephone"],
-        adresses if data.get("adresse") else [],
+        adresses,
         data["roles"]
     )
     return utilisateur

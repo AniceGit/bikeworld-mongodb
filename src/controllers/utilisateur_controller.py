@@ -2,8 +2,7 @@ import streamlit as st
 import json, os
 from pymongo import MongoClient
 from models.utilisateur import Utilisateur
-from models.adresse import Adresse
-
+from models.adresse import Adresse, adresse_from_dict
 
 # ----création d'un nouvel utilisateur via une inscription----#
 def inscrire_utilisateur(
@@ -71,7 +70,6 @@ def creer_utilisateur(
     }
 
     result = collection.insert_one(utilisateur_to_insert)
-    print(f"Utilisateur inséré avec l'id : {result.inserted_id}")
 
 
 # ----connexion d'un utilisateur avec utilisation d'un get-email pour vérifier si cet utilisateur existe et s'il a ce password----#
@@ -95,7 +93,6 @@ def connecter_utilisateur(email: str, password: str) -> bool:
     if utilisateur and utilisateur.password == password:
         st.session_state["utilisateur"] = utilisateur
         st.success(f"Bienvenue, {utilisateur.prenom} !")
-        print("id user avant json save  ", utilisateur.id)
         sauvegarder_json_utilisateur(utilisateur)
         return True
     else:
@@ -127,9 +124,8 @@ def get_utilisateur_by_email(email: str) -> Utilisateur | None:
             password = result.get('password'),
             telephone = result.get("telephone"),
             roles = result.get("roles"),
-            adresses = result.get("adresse")
+            adresses = [adresse_from_dict(a) for a in result.get("adresse")]
         )
-        print("id utilisateur  ", result.get("_id"))
         return utilisateur
     else :
         return None
@@ -349,7 +345,7 @@ def modifier_utilisateur(nouvel_utilisateur: Utilisateur) -> bool:
                     "prenom":nouvel_utilisateur.prenom,
                     "email":nouvel_utilisateur.email,
                     "telephone":nouvel_utilisateur.telephone,
-                    "adresse":nouvel_utilisateur.adresses
+                    "adresse":[a.to_dict() for a in nouvel_utilisateur.adresses]
                 }
             })
     if result.matched_count == 0:
