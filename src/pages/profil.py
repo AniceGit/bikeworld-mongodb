@@ -45,17 +45,7 @@ def profil_vue() -> None:
     # Récupération des infos de l'utilisateur connecté
     utilisateur: Utilisateur = st.session_state["utilisateur"]
     adresse: Adresse = get_adresse_utilisateur_defaut(utilisateur)
-    print(len(utilisateur.adresses))
-    print(adresse.__str__())
-    # Affichage du profil
-    # st.write(f"Nom : {utilisateur.nom}")
-    # st.write(f"Prénom : {utilisateur.prenom}")
-    # st.write(f"Email : {utilisateur.email}")
-    # st.write(f"Téléphone : {utilisateur.telephone}")
-    # if adresse:
-    #     st.write(f"Adresse : {adresse.__str__()}")
-    # else : 
-    #     st.write("Adresse : ")
+
     st.markdown("### 👤 Informations ")
 
     st.markdown(f"""
@@ -85,7 +75,7 @@ def profil_vue() -> None:
     adresses: list[Adresse] = utilisateur.adresses
     option = st.selectbox(
         "Choisissez parmi vos adresses",
-        (adresse.__str__() for adresse in adresses),
+        (adresse.__str__() for adresse in adresses if adresse.active),
         index=None,
         placeholder="Choisir...",
     )

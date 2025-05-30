@@ -70,7 +70,6 @@ def creer_utilisateur(
     }
 
     result = collection.insert_one(utilisateur_to_insert)
-    print(f"Utilisateur inséré avec l'id : {result.inserted_id}")
 
 
 # ----connexion d'un utilisateur avec utilisation d'un get-email pour vérifier si cet utilisateur existe et s'il a ce password----#
@@ -94,7 +93,6 @@ def connecter_utilisateur(email: str, password: str) -> bool:
     if utilisateur and utilisateur.password == password:
         st.session_state["utilisateur"] = utilisateur
         st.success(f"Bienvenue, {utilisateur.prenom} !")
-        print("id user avant json save  ", utilisateur.id)
         sauvegarder_json_utilisateur(utilisateur)
         return True
     else:
@@ -117,7 +115,6 @@ def get_utilisateur_by_email(email: str) -> Utilisateur | None:
     collection = db["utilisateur"]
 
     result:dict = collection.find_one({"email" :  email})
-    print("RESULT ADRESSE :  ", result.get("adresse"))
     if result:
         utilisateur = Utilisateur(
             id = result.get("_id"),
@@ -129,7 +126,6 @@ def get_utilisateur_by_email(email: str) -> Utilisateur | None:
             roles = result.get("roles"),
             adresses = [adresse_from_dict(a) for a in result.get("adresse")]
         )
-        print("id utilisateur  ", result.get("_id"))
         return utilisateur
     else :
         return None
