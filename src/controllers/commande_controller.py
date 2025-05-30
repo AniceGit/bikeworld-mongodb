@@ -2,6 +2,12 @@ import streamlit as st
 from pymongo import MongoClient
 from typing import Any, Dict
 from bson import ObjectId
+from src.models.commande import Commande
+from src.models.adresse import Adresse
+from src.models.utilisateur import Utilisateur
+from src.models.produit import Produit
+from src.models.panier import Panier
+from src.models.produit_commande import ProduitCommande
 
 
 def supprimer_commande(id_commande: str) -> None:
@@ -69,10 +75,10 @@ def transformer_panier() -> bool:
         None: 
     """
     panier: Panier = st.session_state.panier
-
+    print(f"Panier: {panier}")
 
     user:Utilisateur = st.session_state["utilisateur"]
-    if user.adresse is None:
+    if user.adresses is None:
         return False
 
 
@@ -84,14 +90,15 @@ def transformer_panier() -> bool:
 
     ma_ligne = dict()
     for pc in panier.liste_produits_quantite:
-        ma_ligne["quantite"] = pc.quantie
-        ma_ligne["prix"] = pc.prix
-        ma_ligne["id_produit"] = pc.id_produit
-        ma_ligne["nom"] = pc.nom
-        ma_ligne["desc"] = pc.desc
-        ma_ligne["spec_tech"] = pc.spec_tech
-        ma_ligne["couleur"] = pc.couleur
-        ma_ligne["image"] = pc.image
+        print(f"pc: {pc}")
+        ma_ligne["quantite"] = pc["quantite"]
+        ma_ligne["prix"] = pc["prix"]
+        ma_ligne["id_produit"] = pc["produit_id"]
+        ma_ligne["nom"] = pc["produit"]
+        # ma_ligne["desc"] = pc.desc
+        # ma_ligne["spec_tech"] = pc.spec_tech
+        # ma_ligne["couleur"] = pc.couleur
+        # ma_ligne["image"] = pc.image
 
         commande["produit_commande"].append(ma_ligne)
 

@@ -1,0 +1,264 @@
+[{
+  "_id": {
+    "$oid": "6835c95b3f730177e37e1372"
+  },
+  "adresse": [
+    {
+      "numero": "10",
+      "type_voie": "rue",
+      "nom_voie": "de la Convention",
+      "code_postal": "75015",
+      "ville": "Paris",
+      "pays": "France",
+      "defaut": 1,
+      "active": 1,
+      "id_utilisateur": 1
+    },
+    {
+      "numero": "22 BIS",
+      "type_voie": "avenue",
+      "nom_voie": "du Général Leclerc",
+      "code_postal": "13003",
+      "ville": "Marseille",
+      "pays": "France",
+      "defaut": 1,
+      "active": 1,
+      "id_utilisateur": 2
+    },
+    {
+      "numero": "5",
+      "type_voie": "place",
+      "nom_voie": "du Capitole",
+      "code_postal": "31000",
+      "ville": "Toulouse",
+      "pays": "France",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 3
+    },
+    {
+      "numero": "7",
+      "type_voie": "rue",
+      "nom_voie": "Pasteur",
+      "code_postal": "67000",
+      "ville": "Strasbourg",
+      "pays": "France",
+      "defaut": 1,
+      "active": 1,
+      "id_utilisateur": 4
+    },
+    {
+      "numero": "13",
+      "type_voie": "boulevard",
+      "nom_voie": "Victor Hugo",
+      "code_postal": "06000",
+      "ville": "Nice",
+      "pays": "France",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 5
+    },
+    {
+      "numero": "3",
+      "type_voie": "rue",
+      "nom_voie": "des Fleurs",
+      "code_postal": "72000",
+      "ville": "Le Mans",
+      "pays": "France",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 6
+    },
+    {
+      "numero": "18",
+      "type_voie": "avenue",
+      "nom_voie": "du Président Kennedy",
+      "code_postal": "33700",
+      "ville": "Mérignac",
+      "pays": "France",
+      "defaut": 1,
+      "active": 1,
+      "id_utilisateur": 7
+    },
+    {
+      "numero": "44",
+      "type_voie": "rue",
+      "nom_voie": "Montorgueil",
+      "code_postal": "75002",
+      "ville": "Paris",
+      "pays": "France",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 1
+    },
+    {
+      "numero": "11",
+      "type_voie": "rue",
+      "nom_voie": "de la Liberté",
+      "code_postal": "21000",
+      "ville": "Dijon",
+      "pays": "France",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 2
+    },
+    {
+      "numero": "6 BIS",
+      "type_voie": "avenue",
+      "nom_voie": "de Paris",
+      "code_postal": "94300",
+      "ville": "Vincennes",
+      "pays": "France",
+      "defaut": 1,
+      "active": 1,
+      "id_utilisateur": 3
+    },
+    {
+      "numero": "1",
+      "type_voie": "rue",
+      "nom_voie": "des Carmes",
+      "code_postal": "31000",
+      "ville": "Toulouse",
+      "pays": "France",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 4
+    },
+    {
+      "numero": "28",
+      "type_voie": "rue",
+      "nom_voie": "du Château",
+      "code_postal": "92000",
+      "ville": "Nanterre",
+      "pays": "France",
+      "defaut": 1,
+      "active": 1,
+      "id_utilisateur": 5
+    },
+    {
+      "numero": "9",
+      "type_voie": "rue",
+      "nom_voie": "Saint-Nicolas",
+      "code_postal": "44000",
+      "ville": "Nantes",
+      "pays": "France",
+      "defaut": 1,
+      "active": 1,
+      "id_utilisateur": 6
+    },
+    {
+      "numero": "17",
+      "type_voie": "boulevard",
+      "nom_voie": "des Belges",
+      "code_postal": "69006",
+      "ville": "Lyon",
+      "pays": "France",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 7
+    },
+    {
+      "numero": "2",
+      "type_voie": "place",
+      "nom_voie": "Masséna",
+      "code_postal": "06000",
+      "ville": "Nice",
+      "pays": "France",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 1
+    },
+    {
+      "numero": "15",
+      "type_voie": "via",
+      "nom_voie": "Roma",
+      "code_postal": "00185",
+      "ville": "Rome",
+      "pays": "Italie",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 2
+    },
+    {
+      "numero": "7",
+      "type_voie": "rue",
+      "nom_voie": "de la Loi",
+      "code_postal": "1040",
+      "ville": "Bruxelles",
+      "pays": "Belgique",
+      "defaut": 0,
+      "active": 1,
+      "id_utilisateur": 5
+    }
+  ],
+  "commande": [
+    {
+      "date_commande": "2025-04-15",
+      "etat": "Expediee",
+      "prix_total": 1798,
+      "frais_livraison": 0,
+      "id_utilisateur": 1,
+      "id_adresse": 8
+    },
+    {
+      "date_commande": "2025-05-21",
+      "etat": "Validee",
+      "prix_total": 2207.89,
+      "frais_livraison": 20,
+      "id_utilisateur": 4,
+      "id_adresse": 4
+    },
+    {
+      "date_commande": "2025-05-20",
+      "etat": "Validee",
+      "prix_total": 2997,
+      "frais_livraison": 0,
+      "id_utilisateur": 1,
+      "id_adresse": 1
+    }
+  ],
+  "produit_commande": [
+    {
+      "quantite": 1,
+      "prix": 599,
+      "id_produit": 2,
+      "id_commande": 1
+    },
+    {
+      "quantite": 1,
+      "prix": 1199,
+      "id_produit": 12,
+      "id_commande": 1
+    },
+    {
+      "quantite": 1,
+      "prix": 1299.99,
+      "id_produit": 4,
+      "id_commande": 2
+    },
+    {
+      "quantite": 2,
+      "prix": 379,
+      "id_produit": 5,
+      "id_commande": 2
+    },
+    {
+      "quantite": 1,
+      "prix": 149.9,
+      "id_produit": 7,
+      "id_commande": 2
+    },
+    {
+      "quantite": 1,
+      "prix": 599,
+      "id_produit": 2,
+      "id_commande": 3
+    },
+    {
+      "quantite": 2,
+      "prix": 1199,
+      "id_produit": 12,
+      "id_commande": 3
+    }
+  ]
+}]

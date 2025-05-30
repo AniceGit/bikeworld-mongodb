@@ -25,3 +25,4 @@ class Panier:
 
     def get_frais_livraison(self):
         return 25.0 if self.recalculer_total_panier() < 1500 else 0.0
+
