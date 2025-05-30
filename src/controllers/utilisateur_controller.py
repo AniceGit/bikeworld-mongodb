@@ -2,8 +2,7 @@ import streamlit as st
 import json, os
 from pymongo import MongoClient
 from models.utilisateur import Utilisateur
-from models.adresse import Adresse
-
+from models.adresse import Adresse, adresse_from_dict
 
 # ----création d'un nouvel utilisateur via une inscription----#
 def inscrire_utilisateur(
@@ -118,6 +117,7 @@ def get_utilisateur_by_email(email: str) -> Utilisateur | None:
     collection = db["utilisateur"]
 
     result:dict = collection.find_one({"email" :  email})
+    print("RESULT ADRESSE :  ", result.get("adresse"))
     if result:
         utilisateur = Utilisateur(
             id = result.get("_id"),
@@ -127,7 +127,7 @@ def get_utilisateur_by_email(email: str) -> Utilisateur | None:
             password = result.get('password'),
             telephone = result.get("telephone"),
             roles = result.get("roles"),
-            adresses = result.get("adresse")
+            adresses = [adresse_from_dict(a) for a in result.get("adresse")]
         )
         print("id utilisateur  ", result.get("_id"))
         return utilisateur
@@ -349,7 +349,7 @@ def modifier_utilisateur(nouvel_utilisateur: Utilisateur) -> bool:
                     "prenom":nouvel_utilisateur.prenom,
                     "email":nouvel_utilisateur.email,
                     "telephone":nouvel_utilisateur.telephone,
-                    "adresse":nouvel_utilisateur.adresses
+                    "adresse":[a.to_dict() for a in nouvel_utilisateur.adresses]
                 }
             })
     if result.matched_count == 0:

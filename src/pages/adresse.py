@@ -3,7 +3,7 @@ import time
 from pages.sidebar import afficher_sidebar
 from models.utilisateur import Utilisateur
 from models.adresse import Adresse
-from controllers.utilisateur_controller import creer_adresse, get_adresses_utilisateur, sauvegarder_json_utilisateur, supprimer_adresse_utilisateur
+from controllers.utilisateur_controller import sauvegarder_json_utilisateur
 from src.tools.session import init_session
 
 init_session()
