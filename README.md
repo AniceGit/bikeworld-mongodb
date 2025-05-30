@@ -48,7 +48,7 @@ bikeworld/
 │
 ├── db/
 │   ├── data.json
-│   └── db.py
+│   └── mongo.py
 │
 ├── images/
 │   └── ...
@@ -69,6 +69,7 @@ bikeworld/
 │   │
 │   ├── pages
 │   │   ├── admin_commandes.py
+│   │   ├── admin_graph_ventes.py
 │   │   ├── admin_produit.py
 │   │   ├── adresse.py
 │   │   ├── bikeworld.py
