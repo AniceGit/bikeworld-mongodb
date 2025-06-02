@@ -73,7 +73,6 @@ for i, produit in enumerate(liste_produits):
                     unsafe_allow_html=True
                 )
                 st.image(produit.image, use_container_width=True)
-                #with nom_col:
                 st.markdown(
                         f"""
                             <div style='background-color: #191919; padding: 1px; border-radius: 5px;'>
