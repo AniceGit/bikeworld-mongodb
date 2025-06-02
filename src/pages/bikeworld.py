@@ -9,21 +9,29 @@ def afficher_produits_stars() -> None:
     """
     Affiche les trois produits les plus vendus dans une interface Streamlit.
 
-    Cette fonction récupère les trois produits les plus vendus et les affiche
-    dans une grille de colonnes avec des médailles pour indiquer leur rang.
-    Chaque produit est affiché avec son image, son nom, son prix, et un bouton
-    pour voir les détails du produit.
+    Cette fonction récupère les trois produits les plus vendus à l'aide de la fonction
+    `get_top_3_ventes` et les affiche dans une grille de colonnes. Chaque produit est
+    présenté avec une médaille indiquant son rang (or pour le premier, argent pour le
+    deuxième, et bronze pour le troisième). Les informations affichées pour chaque produit
+    incluent son image, son nom, son prix, et un bouton pour accéder à une page de détails
+    spécifique au produit.
+
+    Les produits sont disposés dans une interface utilisateur attrayante avec des styles
+    CSS personnalisés pour les éléments de texte et les images. Si un produit n'a pas d'image,
+    un message "Aucune image disponible" est affiché à la place.
+
+    Returns:
+        None: Cette fonction ne retourne rien mais modifie l'interface utilisateur Streamlit
+              directement en affichant les produits.
+
+    Raises:
+        Exception: Peut lever des exceptions liées à l'accès aux données des produits ou à
+                   l'interface Streamlit, bien que celles-ci ne soient pas explicitement
+                   gérées dans la fonction.
     """
 
-
-    #st.markdown("#")
-    #st.markdown(
-    #"<h2 style='text-align: center; color: #f1ab00; background-color: transparent;'>Top Ventes</h2>"
-    #unsafe_allow_html=True)
-    #st.markdown("#")
     liste_top_ventes: list[Produit] = get_top_3_ventes()
         
-
     nb_colonnes = 3
     colonnes = st.columns(nb_colonnes)
 
