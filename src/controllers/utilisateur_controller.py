@@ -5,6 +5,8 @@ from models.utilisateur import Utilisateur
 from models.adresse import Adresse, adresse_from_dict
 from bson import ObjectId
 
+from tools.security import hash_password, verify_password
+
 # ----création d'un nouvel utilisateur via une inscription----#
 def inscrire_utilisateur(
     nom: str, prenom: str, email: str, password: str, telephone: str
@@ -64,7 +66,7 @@ def creer_utilisateur(
         "nom": utilisateur.nom,
         "prenom": utilisateur.prenom,
         "email": utilisateur.email,
-        "password": utilisateur.password,
+        "password": hash_password(utilisateur.password),
         "telephone": utilisateur.telephone,
         "roles":utilisateur.roles,
         "adresse":utilisateur.adresses
@@ -91,7 +93,7 @@ def connecter_utilisateur(email: str, password: str) -> bool:
         Sauvegarde l'utilisateur dans un fichier JSON.
     """
     utilisateur: Utilisateur = get_utilisateur_by_email(email)
-    if utilisateur and utilisateur.password == password:
+    if utilisateur and verify_password(utilisateur.password, password):
         st.session_state["utilisateur"] = utilisateur
         st.success(f"Bienvenue, {utilisateur.prenom} !")
         sauvegarder_json_utilisateur(utilisateur)

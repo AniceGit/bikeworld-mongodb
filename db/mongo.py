@@ -31,8 +31,6 @@ def init_db(data) -> None:
     result_utilisateurs = collection.insert_many(utilisateurs)
     # print(f"IDs insérés dans la collection utilisateur: {result_utilisateurs.inserted_ids}")
 
-
-
     # destruction de la collection des produits
     collection = db["produit"]
     print("Suppression de la collection produit")

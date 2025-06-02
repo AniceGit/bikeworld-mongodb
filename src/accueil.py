@@ -1,5 +1,6 @@
 import streamlit as st
 from pages.sidebar import afficher_sidebar
+from tools.security import hash_password
 from tools.session import init_session
 from pages.bikeworld import afficher_produits_stars
 import base64

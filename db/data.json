@@ -4,7 +4,7 @@
             "nom": "Guiren",
             "prenom": "Anice",
             "email": "anice@example.com",
-            "password": "testAnice",
+            "password": "$argon2id$v=19$m=65536,t=3,p=4$8JxizvHL/k2gsZcoc7J5CQ$t/WmBsdmAaIQl9fLjvRIpTBkT7HHMwdrF5UR/2vZ5lA",
             "telephone": "07.06.05.04.03",
             "roles": {
                 "admin": true,
@@ -48,7 +48,7 @@
             "nom": "Muller",
             "prenom": "Stephane",
             "email": "stephane@example.com",
-            "password": "testStephane",
+            "password": "$argon2id$v=19$m=65536,t=3,p=4$rFz9KAqHAHpLdTv2uEC18g$xpQpBwljl3zfVDmnaByYs5VVT1atV8JVJA9v+az1L1I",
             "telephone": "06.07.08.09.10",
             "roles": {
                 "admin": true,
@@ -92,7 +92,7 @@
             "nom": "Dewaelle",
             "prenom": "Sebastien",
             "email": "sebastien@example.com",
-            "password": "testCeb",
+            "password": "$argon2id$v=19$m=65536,t=3,p=4$YXLmMCy3iE27Go5YNN4vxg$DfglCZ13R9Qw0OAgmiW5znBTpdzdpxJY8EOAmip8ce0",
             "telephone": "06.99.98.97.96",
             "roles": {
                 "admin": true,
@@ -126,7 +126,7 @@
             "nom": "Dupont",
             "prenom": "Alice",
             "email": "alice.dupont@example.com",
-            "password": "testAlice",
+            "password": "$argon2id$v=19$m=65536,t=3,p=4$uabhV3BlhZu0BJ1Hqp6D1Q$askQVD82T1esQTUw/JaRH0l1ub0n2qHzT+mx2nA7HAo",
             "telephone": "06.45.89.23.10",
             "roles": {
                 "admin": false,
@@ -160,7 +160,7 @@
             "nom": "Martin",
             "prenom": "Lucas",
             "email": "lucas.martin@example.com",
-            "password": "testLucas",
+            "password": "$argon2id$v=19$m=65536,t=3,p=4$w3GmUbi6COVn2JImbPtQHg$dIpX37PR/kQTjYcVZfrKtbkRq1JXXN/sOrdIYgU5Gsc",
             "telephone": "07.62.34.56.78",
             "roles": {
                 "admin": false,
@@ -204,7 +204,7 @@
             "nom": "Lemoine",
             "prenom": "Chloé",
             "email": "chloe.lemoine@example.com",
-            "password": "testChloe",
+            "password": "$argon2id$v=19$m=65536,t=3,p=4$61YdqK2vzeV29GxgrbMtFg$L9Gl25bHAB2qFfkiDtjlVORQUEMpp3L/TDxa+6H9rWM",
             "telephone": "06.98.23.45.12",
             "roles": {
                 "admin": false,
@@ -238,7 +238,7 @@
             "nom": "Bernard",
             "prenom": "Julien",
             "email": "julien.bernard@example.com",
-            "password": "testJulien",
+            "password": "$argon2id$v=19$m=65536,t=3,p=4$2ZXDILuGMhGzqWlYidHFMQ$K+o+7U4eDGHXVZoa3VasmvF5TqxrCuEYlw0kMwCZtJ4",
             "telephone": "07.51.63.22.84",
             "roles": {
                 "admin": false,
