@@ -27,6 +27,16 @@ if not st.session_state['utilisateur'].is_admin():
 afficher_sidebar()
 
 def afficher_graph_ventes():
+    """
+    Affiche un graphique des ventes par produit pour une période donnée.
+
+    Cette fonction permet à l'utilisateur de sélectionner une période et un produit,
+    puis récupère les données de ventes depuis MongoDB pour afficher un graphique
+    des ventes agrégées par produit.
+
+    Returns:
+        None
+    """
     st.title("Graphique des Ventes par Produit")
 
     # Widgets pour sélectionner la période

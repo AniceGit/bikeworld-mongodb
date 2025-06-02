@@ -10,6 +10,9 @@ def get_produits() -> list[Produit]:
     """
     Récupère tous les produits de la base de données.
 
+    Cette fonction interroge la base de données MongoDB pour récupérer tous les produits
+    disponibles et les retourne sous forme de liste d'objets Produit.
+
     Returns:
         list[Produit]: Une liste d'objets Produit représentant tous les produits disponibles.
 
@@ -75,6 +78,9 @@ def get_details_produit(id_produit: int) -> Produit:
 def get_top_3_ventes() -> list[Produit]:
     """
     Récupère les trois produits les plus vendus.
+
+    Cette fonction récupère les trois produits ayant le plus de ventes et les retourne
+    sous forme de liste d'objets Produit.
 
     Returns:
         list[Produit]: Une liste d'objets Produit représentant les trois produits les plus vendus.
