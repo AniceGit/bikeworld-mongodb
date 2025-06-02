@@ -263,7 +263,6 @@ def get_utilisateur_by_id(id_utilisateur: int) -> Utilisateur | None:
     client = MongoClient("mongodb://localhost:27017/")
     db = client["bikeworld-mongo"]
     collection = db["utilisateur"]
-    print (id_utilisateur)
     result:dict = collection.find_one({"_id" :  ObjectId(id_utilisateur)})
 
 

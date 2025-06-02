@@ -37,7 +37,7 @@ else:
     for produit in produits:
         data.append(
             {
-                "ID": produit.id,
+                "ID": str(produit.id),
                 "Nom": produit.nom,
                 "Description": produit.description,
                 "Spécifications techniques": produit.spec_tech,

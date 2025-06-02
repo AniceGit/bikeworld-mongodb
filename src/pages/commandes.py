@@ -23,7 +23,6 @@ afficher_sidebar()
 st.title("Vos commandes")
 
 # Récupération des commandes du client
-# print(f"id_utilisateur: {type(st.session_state["utilisateur"].id)}, {st.session_state["utilisateur"].id}")
 commandes = get_commandes_by_utilisateur(st.session_state["utilisateur"].id)
 
 if not commandes:
@@ -37,7 +36,7 @@ else:
 
         data.append(
             {
-                "ID": cmd.id,
+                "ID": str(cmd.id),
                 "Date": cmd.date_commande,
                 "Frais de livraison (€)": f"{cmd.frais_livraison:.2f}",
                 "Total (€)": f"{cmd.prix_total:.2f}",

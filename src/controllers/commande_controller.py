@@ -49,7 +49,6 @@ def get_commandes_by_utilisateur(id_utilisateur: ObjectId) -> list[Commande] | N
 
     commandes = []
     for commande in collection.find({"id_utilisateur": ObjectId(id_utilisateur)}):
-        # print(f"commande: {commande}")
         adresse = commande["adresse"]
         mon_adresse = Adresse(adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0)
 
@@ -77,7 +76,6 @@ def transformer_panier() -> bool:
         None: 
     """
     panier: Panier = st.session_state.panier
-    # print(f"Panier: {panier}")
 
     user:Utilisateur = st.session_state["utilisateur"]
     if user.adresses is None:
@@ -93,7 +91,6 @@ def transformer_panier() -> bool:
 
     ma_ligne = dict()
     for pc in panier.liste_produits_quantite:
-        print(f"pc: {pc}")
         ma_ligne["quantite"] = pc.get("quantite")
         ma_ligne["prix"] = pc.get("prix")
         ma_ligne["id_produit"] = pc.get("produit_id")
@@ -106,10 +103,8 @@ def transformer_panier() -> bool:
         commande["produit_commande"].append(ma_ligne.copy())
 
     commande["id_utilisateur"] = user.id
-    # print(f"session user adresse: {user.adresses}")
     for adresse in user.adresses:
         if adresse.defaut == 1:
-            # print(f"adresse par défaut: {adresse}")
             break
 
     mon_adresse = dict()
@@ -121,8 +116,6 @@ def transformer_panier() -> bool:
     mon_adresse["pays"] = adresse.pays
 
     commande["adresse"] = mon_adresse
-
-    # print(f"Commande: {commande}")
 
     client = MongoClient("mongodb://localhost:27017/")
 
@@ -154,7 +147,6 @@ def get_commandes() -> list[Commande]:
 
     commandes = []
     for commande in collection.find():
-        # print(f"Ma commande: {commande}")
         adresse = commande["adresse"]
         mon_adresse = Adresse(adresse["numero"], adresse["type_voie"], adresse["nom_voie"], adresse["code_postal"], adresse["ville"], adresse["pays"], 0, 0)
 

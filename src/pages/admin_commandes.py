@@ -39,7 +39,7 @@ else:
         utilisateur = get_utilisateur_by_id(cmd.id_utilisateur)
         data.append(
             {
-                "ID": cmd.id,
+                "ID": str(cmd.id),
                 "Client": f"{utilisateur.prenom} {utilisateur.nom}",
                 "Date": cmd.date_commande,
                 "Frais de livraison (€)": f"{cmd.frais_livraison:.2f}",
