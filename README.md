@@ -37,6 +37,8 @@ Développer une boutique, sélectionner et acheter des vélos, tout en offrant u
 
 -   🖥️ streamlit
 
+-   🍃 mongodb
+
 
 
 ## 📁 Structure du projet
@@ -84,7 +86,8 @@ bikeworld/
 │   │   └── sidebar.py
 │   │
 │   ├── tools
-│   │   └── session.py
+│   │   ├── session.py
+│   │   └── security.py
 │   │
 │   ├── accueil.py
 │   └── style.css
@@ -113,7 +116,7 @@ Quelques exemples d'affichage:
 ### 📦 Installation  
   
 ```bash  
-git clone https://github.com/AniceGit/bikeworld.git
+git clone https://github.com/AniceGit/bikeworld-mongodb.git
 cd bikeworld
 
 sur linux
@@ -125,9 +128,9 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
 pip install -r requirements.txt
-sudo apt-get install sqlite3
 
-lancer le script db.py
+installer mongodb: https://www.mongodb.com/try/download/community
+lancer le script mongo.py
 
 
 ```
